@@ -1,8 +1,8 @@
-set(DICT_TAR "wenzhounese-dict-20180104.tar.xz")
-set(DICT_URL "https://download.fcitx-im.org/data/${DICT_TAR}")
+#set(DICT_TAR "jyutping-dict-20180104.tar.xz")
+#set(DICT_URL "https://download.fcitx-im.org/data/${DICT_TAR}")
 
-set(MODEL_TAR "wenzhounese-model-20180103.tar.xz")
-set(MODEL_URL "https://download.fcitx-im.org/data/${MODEL_TAR}")
+#set(MODEL_TAR "jyutping-model-20180103.tar.xz")
+#set(MODEL_URL "https://download.fcitx-im.org/data/${MODEL_TAR}")
 
 #fcitx5_download(dict-download ${DICT_URL} ${DICT_TAR}
 #                e3a5b13edb8efa2f764245a3232f99ba7e7670e22b8cbe666a4fffa84b35f35b)
@@ -15,7 +15,7 @@ set(MODEL_URL "https://download.fcitx-im.org/data/${MODEL_TAR}")
 #                OUTPUT hk.arpa)
 
 #set(LM_SRC "${CMAKE_CURRENT_BINARY_DIR}/hk.arpa")
-set(LM_SRC "/home/wa/code/fcitx/libime-jyutping/data/hk.arpa")
+set(LM_SRC "${CMAKE_CURRENT_SOURCE_DIR}/hk.arpa")
 set(LM_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/zh_HK.lm")
 set(LM_PREDICT_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/zh_HK.lm.predict")
 
@@ -32,7 +32,7 @@ add_custom_command(
 add_custom_target(predict ALL DEPENDS "${LM_PREDICT_OUTPUT}")
 
 #set(DICT_SRC "${CMAKE_CURRENT_BINARY_DIR}/words.txt")
-set(DICT_SRC "/home/wa/code/fcitx/libime-jyutping/data/words.txt")
+set(DICT_SRC "${CMAKE_CURRENT_SOURCE_DIR}/words.txt")
 set(DICT_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/wenzhounese.dict")
 add_custom_command(
   OUTPUT "${DICT_OUTPUT}"

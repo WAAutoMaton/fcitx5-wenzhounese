@@ -1,0 +1,2 @@
+*.arpa filter=lfs diff=lfs merge=lfs -text
+data/words.txt filter=lfs diff=lfs merge=lfs -text
