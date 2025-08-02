@@ -7,10 +7,10 @@
 #include "libime/core/historybigram.h"
 #include "libime/core/lattice.h"
 #include "libime/core/userlanguagemodel.h"
-#include "libime/jyutping/jyutpingcontext.h"
-#include "libime/jyutping/jyutpingdecoder.h"
-#include "libime/jyutping/jyutpingdictionary.h"
-#include "libime/jyutping/jyutpingime.h"
+#include "libime/wenzhounese/wenzhounesecontext.h"
+#include "libime/wenzhounese/wenzhounesedecoder.h"
+#include "libime/wenzhounese/wenzhounesedictionary.h"
+#include "libime/wenzhounese/wenzhouneseime.h"
 #include "testdir.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/iostreams/device/null.hpp>
@@ -23,27 +23,27 @@
 #include <sstream>
 
 using namespace libime;
-using namespace libime::jyutping;
+using namespace libime::wenzhounese;
 
 int main(int argc, char *argv[]) {
     fcitx::Log::setLogRule("libime=5");
-    JyutpingIME ime(std::make_unique<JyutpingDictionary>(),
+    WenzhouneseIME ime(std::make_unique<WenzhouneseDictionary>(),
                     std::make_unique<UserLanguageModel>(LIBIME_BINARY_DIR
                                                         "/data/zh_HK.lm"));
     ime.setNBest(2);
-    ime.dict()->load(JyutpingDictionary::SystemDict,
-                     LIBIME_BINARY_DIR "/data/jyutping.dict",
-                     JyutpingDictFormat::Binary);
+    ime.dict()->load(WenzhouneseDictionary::SystemDict,
+                     LIBIME_BINARY_DIR "/data/wenzhounese.dict",
+                     WenzhouneseDictFormat::Binary);
     if (argc >= 2) {
-        ime.dict()->load(JyutpingDictionary::UserDict, argv[1],
-                         JyutpingDictFormat::Binary);
+        ime.dict()->load(WenzhouneseDictionary::UserDict, argv[1],
+                         WenzhouneseDictFormat::Binary);
     }
     if (argc >= 3) {
         std::fstream fin(argv[2], std::ios::in | std::ios::binary);
         ime.model()->history().load(fin);
     }
     ime.setScoreFilter(1.0f);
-    JyutpingContext c(&ime);
+    WenzhouneseContext c(&ime);
 
     std::string word;
     while (std::cin >> word) {
@@ -81,12 +81,12 @@ int main(int argc, char *argv[]) {
         for (auto &candidate : c.candidates()) {
             std::cout << (count % 10) << ": ";
             for (auto node : candidate.sentence()) {
-                auto &jyutping = static_cast<const JyutpingLatticeNode *>(node)
-                                     ->encodedJyutping();
+                auto &wenzhounese = static_cast<const WenzhouneseLatticeNode *>(node)
+                                     ->encodedWenzhounese();
                 std::cout << node->word();
-                if (!jyutping.empty()) {
+                if (!wenzhounese.empty()) {
                     std::cout << " "
-                              << JyutpingEncoder::decodeFullJyutping(jyutping);
+                              << WenzhouneseEncoder::decodeFullWenzhounese(wenzhounese);
                 }
             }
             std::cout << " " << candidate.score() << std::endl;
@@ -99,8 +99,8 @@ int main(int argc, char *argv[]) {
 
     boost::iostreams::stream<boost::iostreams::null_sink> nullOstream(
         (boost::iostreams::null_sink()));
-    ime.dict()->save(JyutpingDictionary::UserDict, nullOstream,
-                     JyutpingDictFormat::Binary);
+    ime.dict()->save(WenzhouneseDictionary::UserDict, nullOstream,
+                     WenzhouneseDictFormat::Binary);
     ime.model()->history().dump(nullOstream);
 
     return 0;

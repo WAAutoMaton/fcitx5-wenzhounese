@@ -11,41 +11,41 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
-#include "libime/jyutping/jyutpingdictionary.h"
-#include "libime/jyutping/jyutpingencoder.h"
+#include "libime/wenzhounese/wenzhounesedictionary.h"
+#include "libime/wenzhounese/wenzhouneseencoder.h"
 #include "testdir.h"
 #include <fcitx-utils/log.h>
 
 int main() {
     using namespace libime;
-    using namespace libime::jyutping;
-    JyutpingDictionary dict;
-    dict.load(JyutpingDictionary::SystemDict,
-              LIBIME_BINARY_DIR "/data/jyutping.dict",
-              JyutpingDictFormat::Binary);
+    using namespace libime::wenzhounese;
+    WenzhouneseDictionary dict;
+    dict.load(WenzhouneseDictionary::SystemDict,
+              LIBIME_BINARY_DIR "/data/wenzhounese.dict",
+              WenzhouneseDictFormat::Binary);
 
-    char c[] = {static_cast<char>(JyutpingInitial::J),
-                static_cast<char>(JyutpingFinal::IN),
-                static_cast<char>(JyutpingInitial::H),
-                static_cast<char>(JyutpingFinal::AU)};
+    char c[] = {static_cast<char>(WenzhouneseInitial::J),
+                static_cast<char>(WenzhouneseFinal::IN),
+                static_cast<char>(WenzhouneseInitial::H),
+                static_cast<char>(WenzhouneseFinal::AU)};
     dict.matchWords(c, 2,
-                    [c](std::string_view encodedJyutping,
+                    [c](std::string_view encodedWenzhounese,
                         std::string_view hanzi, float cost) {
-                        std::cout << JyutpingEncoder::decodeFullJyutping(
-                                         encodedJyutping)
+                        std::cout << WenzhouneseEncoder::decodeFullWenzhounese(
+                                         encodedWenzhounese)
                                   << " " << hanzi << " " << cost << std::endl;
                         return true;
                     });
     dict.matchWords(c + 2, 2,
-                    [c](std::string_view encodedJyutping,
+                    [c](std::string_view encodedWenzhounese,
                         std::string_view hanzi, float cost) {
-                        std::cout << JyutpingEncoder::decodeFullJyutping(
-                                         encodedJyutping)
+                        std::cout << WenzhouneseEncoder::decodeFullWenzhounese(
+                                         encodedWenzhounese)
                                   << " " << hanzi << " " << cost << std::endl;
                         return true;
                     });
 
-    auto graph = JyutpingEncoder::parseUserJyutping("jinhau", true);
+    auto graph = WenzhouneseEncoder::parseUserWenzhounese("jinhau", true);
     dict.matchPrefix(graph,
                      [&graph](const SegmentGraphPath &path, WordNode &node,
                               float, std::unique_ptr<LatticeNodeData>) {
@@ -56,8 +56,8 @@ int main() {
                          return true;
                      });
 
-    dict.save(0, LIBIME_BINARY_DIR "/test/testjyutpingdictionary.dict",
-              JyutpingDictFormat::Binary);
-    // dict.save(0, std::cout, JyutpingDictFormat::Text);
+    dict.save(0, LIBIME_BINARY_DIR "/test/testwenzhounesedictionary.dict",
+              WenzhouneseDictFormat::Binary);
+    // dict.save(0, std::cout, WenzhouneseDictFormat::Text);
     return 0;
 }

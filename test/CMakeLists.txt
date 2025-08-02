@@ -9,10 +9,10 @@ set(LIBIME_SINGLE_FILE_TEST
 
 foreach(TESTCASE ${LIBIME_SINGLE_FILE_TEST})
     add_executable(${TESTCASE} ${TESTCASE}.cpp)
-    target_link_libraries(${TESTCASE} LibIME::Jyutping)
+    target_link_libraries(${TESTCASE} LibIME::Wenzhounese)
     add_test(NAME ${TESTCASE}
              COMMAND ${TESTCASE})
 endforeach()
 
 add_executable(testime testime.cpp)
-target_link_libraries(testime LibIME::Jyutping)
+target_link_libraries(testime LibIME::Wenzhounese)

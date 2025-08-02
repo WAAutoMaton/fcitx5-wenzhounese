@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
  */
-#ifndef _LIBIME_JYUTPING_ENGINE_ENGINE_H_
-#define _LIBIME_JYUTPING_ENGINE_ENGINE_H_
+#ifndef _LIBIME_WENZHOUNESE_ENGINE_ENGINE_H_
+#define _LIBIME_WENZHOUNESE_ENGINE_ENGINE_H_
 
 #include <fcitx-config/configuration.h>
 #include <fcitx-config/iniparser.h>
@@ -17,13 +17,13 @@
 #include <fcitx/inputmethodengine.h>
 #include <fcitx/instance.h>
 #include <libime/core/prediction.h>
-#include <libime/jyutping/jyutpingime.h>
+#include <libime/wenzhounese/wenzhouneseime.h>
 #include <memory>
 
 namespace fcitx {
 
 FCITX_CONFIGURATION(
-    JyutpingEngineConfig,
+    WenzhouneseEngineConfig,
     Option<int, IntConstrain> pageSize{this, "PageSize", "Page size", 5,
                                        IntConstrain(3, 10)};
     Option<int, IntConstrain> predictionSize{
@@ -58,16 +58,16 @@ FCITX_CONFIGURATION(
                                     "Number of Sentence", 2,
                                     IntConstrain(1, 3)};
     Option<bool> inner{this, "InnerSegment",
-                       "Use Inner Segment Jyutping Settings", true};);
+                       "Use Inner Segment Wenzhounese Settings", true};);
 
-class JyutpingState;
+class WenzhouneseState;
 class EventSourceTime;
 class CandidateList;
 
-class JyutpingEngine final : public InputMethodEngine {
+class WenzhouneseEngine final : public InputMethodEngine {
 public:
-    JyutpingEngine(Instance *instance);
-    ~JyutpingEngine();
+    WenzhouneseEngine(Instance *instance);
+    ~WenzhouneseEngine();
     Instance *instance() { return instance_; }
     void activate(const InputMethodEntry &entry,
                   InputContextEvent &event) override;
@@ -84,11 +84,11 @@ public:
     const Configuration *getConfig() const override { return &config_; }
     void setConfig(const RawConfig &config) override {
         config_.load(config, true);
-        safeSaveAsIni(config_, "conf/jyutping.conf");
+        safeSaveAsIni(config_, "conf/wenzhounese.conf");
         reloadConfig();
     }
 
-    libime::jyutping::JyutpingIME *ime() { return ime_.get(); }
+    libime::wenzhounese::WenzhouneseIME *ime() { return ime_.get(); }
 
     void initPredict(InputContext *ic);
     void updatePredict(InputContext *ic);
@@ -98,10 +98,10 @@ public:
 
 private:
     Instance *instance_;
-    JyutpingEngineConfig config_;
-    std::unique_ptr<libime::jyutping::JyutpingIME> ime_;
+    WenzhouneseEngineConfig config_;
+    std::unique_ptr<libime::wenzhounese::WenzhouneseIME> ime_;
     KeyList selectionKeys_;
-    FactoryFor<JyutpingState> factory_;
+    FactoryFor<WenzhouneseState> factory_;
     SimpleAction predictionAction_;
     libime::Prediction prediction_;
 
@@ -113,13 +113,13 @@ private:
     FCITX_ADDON_DEPENDENCY_LOADER(spell, instance_->addonManager());
 };
 
-class JyutpingEngineFactory : public AddonFactory {
+class WenzhouneseEngineFactory : public AddonFactory {
 public:
     AddonInstance *create(AddonManager *manager) override {
-        registerDomain("fcitx5-jyutping", FCITX_INSTALL_LOCALEDIR);
-        return new JyutpingEngine(manager->instance());
+        registerDomain("fcitx5-wenzhounese", FCITX_INSTALL_LOCALEDIR);
+        return new WenzhouneseEngine(manager->instance());
     }
 };
 } // namespace fcitx
 
-#endif // _LIBIME_JYUTPING_ENGINE_ENGINE_H_
+#endif // _LIBIME_WENZHOUNESE_ENGINE_ENGINE_H_

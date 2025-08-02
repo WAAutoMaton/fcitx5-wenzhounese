@@ -1,6 +1,6 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the fcitx5-jyutping package.
+# This file is distributed under the same license as the fcitx5-wenzhounese package.
 #
 # Translators:
 # csslayer <wengxt@gmail.com>, 2022
@@ -9,7 +9,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: fcitx5-jyutping\n"
+"Project-Id-Version: fcitx5-wenzhounese\n"
 "Report-Msgid-Bugs-To: fcitx-dev@googlegroups.com\n"
 "POT-Creation-Date: 2025-02-22 20:24+0000\n"
 "PO-Revision-Date: 2022-12-07 15:20+0000\n"
@@ -22,14 +22,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: src/engine/org.fcitx.Fcitx5.Addon.Jyutping.metainfo.xml.in:7
-#: src/engine/jyutping.conf.in:2 src/engine/jyutping-addon.conf.in.in:2
-msgid "Jyutping"
-msgstr "粤拼"
+#: src/engine/org.fcitx.Fcitx5.Addon.Wenzhounese.metainfo.xml.in:7
+#: src/engine/wenzhounese.conf.in:2 src/engine/wenzhounese-addon.conf.in.in:2
+msgid "Wenzhounese"
+msgstr "温州话"
 
-#: src/engine/org.fcitx.Fcitx5.Addon.Jyutping.metainfo.xml.in:8
-msgid "Jyutping input method"
-msgstr "粤语拼音输入法"
+#: src/engine/org.fcitx.Fcitx5.Addon.Wenzhounese.metainfo.xml.in:8
+msgid "Wenzhounese input method"
+msgstr "温州话输入法"
 
 #: src/engine/engine.cpp:418
 msgid "Prediction"

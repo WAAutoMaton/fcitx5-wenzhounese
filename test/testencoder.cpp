@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
-#include "libime/jyutping/jyutpingdata.h"
-#include "libime/jyutping/jyutpingencoder.h"
+#include "libime/wenzhounese/wenzhounesedata.h"
+#include "libime/wenzhounese/wenzhouneseencoder.h"
 #include <fcitx-utils/log.h>
 
 using namespace libime;
-using namespace libime::jyutping;
+using namespace libime::wenzhounese;
 
 void dfs(const SegmentGraph &segs) {
     FCITX_ASSERT(segs.checkGraph());
@@ -30,8 +30,8 @@ void dfs(const SegmentGraph &segs) {
 
 int main() {
     std::unordered_set<std::string> seen;
-    for (auto &p : getJyutpingMap()) {
-        auto jyutping = p.jyutping();
+    for (auto &p : getWenzhouneseMap()) {
+        auto wenzhounese = p.wenzhounese();
         auto initial = p.initial();
         auto final = p.final();
 
@@ -39,31 +39,31 @@ int main() {
             continue;
         }
 
-        auto fullJyutping = JyutpingEncoder::initialToString(initial) +
-                            JyutpingEncoder::finalToString(final);
+        auto fullWenzhounese = WenzhouneseEncoder::initialToString(initial) +
+                            WenzhouneseEncoder::finalToString(final);
         // make sure valid item is unique
-        auto result = seen.insert(jyutping);
+        auto result = seen.insert(wenzhounese);
         FCITX_ASSERT(result.second);
 
         int16_t encode =
-            ((static_cast<int16_t>(initial) - JyutpingEncoder::firstInitial) *
-             (JyutpingEncoder::lastFinal - JyutpingEncoder::firstFinal + 1)) +
-            (static_cast<int16_t>(final) - JyutpingEncoder::firstFinal);
-        FCITX_ASSERT(JyutpingEncoder::isValidInitialFinal(initial, final))
+            ((static_cast<int16_t>(initial) - WenzhouneseEncoder::firstInitial) *
+             (WenzhouneseEncoder::lastFinal - WenzhouneseEncoder::firstFinal + 1)) +
+            (static_cast<int16_t>(final) - WenzhouneseEncoder::firstFinal);
+        FCITX_ASSERT(WenzhouneseEncoder::isValidInitialFinal(initial, final))
             << " " << encode;
-        FCITX_ASSERT(fullJyutping == jyutping)
-            << " " << fullJyutping << " " << jyutping;
+        FCITX_ASSERT(fullWenzhounese == wenzhounese)
+            << " " << fullWenzhounese << " " << wenzhounese;
         std::cout << encode << "," << std::endl;
     }
 
-    dfs(JyutpingEncoder::parseUserJyutping("sangwut"));
-    dfs(JyutpingEncoder::parseUserJyutping("ngng"));
-    dfs(JyutpingEncoder::parseUserJyutping("ngaat"));
-    dfs(JyutpingEncoder::parseUserJyutping("ngngaat"));
-    dfs(JyutpingEncoder::parseUserJyutping("neizaudaajatgeoi"));
-    dfs(JyutpingEncoder::parseUserJyutping("jinhauonjathaa"));
-    dfs(JyutpingEncoder::parseUserJyutping("jinha"));
-    dfs(JyutpingEncoder::parseUserJyutping("jinhau"));
+    dfs(WenzhouneseEncoder::parseUserWenzhounese("sangwut"));
+    dfs(WenzhouneseEncoder::parseUserWenzhounese("ngng"));
+    dfs(WenzhouneseEncoder::parseUserWenzhounese("ngaat"));
+    dfs(WenzhouneseEncoder::parseUserWenzhounese("ngngaat"));
+    dfs(WenzhouneseEncoder::parseUserWenzhounese("neizaudaajatgeoi"));
+    dfs(WenzhouneseEncoder::parseUserWenzhounese("jinhauonjathaa"));
+    dfs(WenzhouneseEncoder::parseUserWenzhounese("jinha"));
+    dfs(WenzhouneseEncoder::parseUserWenzhounese("jinhau"));
 
     return 0;
 }

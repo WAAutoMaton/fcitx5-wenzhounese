@@ -10,19 +10,19 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 #include "libime/core/languagemodel.h"
-#include "libime/jyutping/jyutpingdecoder.h"
-#include "libime/jyutping/jyutpingdictionary.h"
-#include "libime/jyutping/jyutpingencoder.h"
+#include "libime/wenzhounese/wenzhounesedecoder.h"
+#include "libime/wenzhounese/wenzhounesedictionary.h"
+#include "libime/wenzhounese/wenzhouneseencoder.h"
 #include "testdir.h"
 #include <fcitx-utils/log.h>
 #include <limits>
 
 using namespace libime;
-using namespace libime::jyutping;
+using namespace libime::wenzhounese;
 
-void testTime(JyutpingDictionary &, Decoder &decoder, const char *jyutping,
+void testTime(WenzhouneseDictionary &, Decoder &decoder, const char *wenzhounese,
               int nbest = 1) {
-    auto graph = JyutpingEncoder::parseUserJyutping(jyutping, true);
+    auto graph = WenzhouneseEncoder::parseUserWenzhounese(wenzhounese, true);
     Lattice lattice;
     decoder.decode(lattice, graph, nbest, decoder.model()->nullState(),
                    std::numeric_limits<float>::max(),
@@ -38,12 +38,12 @@ void testTime(JyutpingDictionary &, Decoder &decoder, const char *jyutping,
 }
 
 int main() {
-    JyutpingDictionary dict;
-    dict.load(JyutpingDictionary::SystemDict,
-              LIBIME_BINARY_DIR "/data/jyutping.dict",
-              JyutpingDictFormat::Binary);
+    WenzhouneseDictionary dict;
+    dict.load(WenzhouneseDictionary::SystemDict,
+              LIBIME_BINARY_DIR "/data/wenzhounese.dict",
+              WenzhouneseDictFormat::Binary);
     LanguageModel model(LIBIME_BINARY_DIR "/data/zh_HK.lm");
-    JyutpingDecoder decoder(&dict, &model);
+    WenzhouneseDecoder decoder(&dict, &model);
     testTime(dict, decoder, "jinhau");
 
     return 0;

@@ -1,2 +1,2 @@
 #!/bin/bash
-gen_pot cxx:appdata:ui:desktop fcitx5-jyutping po .
+gen_pot cxx:appdata:ui:desktop fcitx5-wenzhounese po .

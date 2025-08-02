@@ -1,8 +1,13 @@
-Libime Jyutping
-===================
-A library make use of libime to implement jyutping (粵拼) input method.
+Libime Wenzhounese
+=========
 
-It also includes engine for fcitx 5.
+A library make use of libime to implement wenzhounese (溫州話) input method.
 
-The source code is released under LGPL2.1+. While the data file is derived from
-libpinyin and rime-jyutping, and it release under GPLv3+.
+Build Status
+------------
+[![Build Status](https://travis-ci.org/fcitx/libime-wenzhounese.svg?branch=master)](https://travis-ci.org/fcitx/libime-wenzhounese)
+
+Credit
+------
+The dictionary is based on open-source dictionaries from various source, including
+libpinyin and rime-wenzhounese, and it release under GPLv3+.

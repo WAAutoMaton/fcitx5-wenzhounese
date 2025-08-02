@@ -1,1 +1,1 @@
-add_subdirectory(jyutping)
+add_subdirectory(wenzhounese)

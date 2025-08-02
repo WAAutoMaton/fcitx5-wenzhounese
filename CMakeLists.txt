@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.7)
-project(libime-jyutping VERSION 1.0.14)
+project(libime-wenzhounese VERSION 1.0.14)
 
 set(REQUIRED_FCITX_VERSION 5.1.13)
 find_package(ECM 1.0 REQUIRED)
@@ -32,8 +32,8 @@ find_package(Fcitx5Utils  ${REQUIRED_FCITX_VERSION} REQUIRED)
 include("${FCITX_INSTALL_CMAKECONFIG_DIR}/Fcitx5Utils/Fcitx5CompilerSettings.cmake")
 
 find_package(Boost 1.61 REQUIRED COMPONENTS iostreams)
-set(LIBIME_JYUTPING_INSTALL_PKGDATADIR "${CMAKE_INSTALL_FULL_DATADIR}/libime")
-set(LIBIME_JYUTPING_INSTALL_LIBDATADIR "${CMAKE_INSTALL_FULL_LIBDIR}/libime")
+set(LIBIME_WENZHOUNESE_INSTALL_PKGDATADIR "${CMAKE_INSTALL_FULL_DATADIR}/libime")
+set(LIBIME_WENZHOUNESE_INSTALL_LIBDATADIR "${CMAKE_INSTALL_FULL_LIBDIR}/libime")
 
 find_package(LibIMECore 1.0.16 REQUIRED)
 

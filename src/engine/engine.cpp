@@ -6,7 +6,7 @@
  */
 
 #include "engine.h"
-#include "libime/jyutping/jyutpingime.h"
+#include "libime/wenzhounese/wenzhouneseime.h"
 #include "punctuation_public.h"
 #include "spell_public.h"
 #include <algorithm>
@@ -49,9 +49,9 @@
 #include <libime/core/languagemodel.h>
 #include <libime/core/prediction.h>
 #include <libime/core/userlanguagemodel.h>
-#include <libime/jyutping/jyutpingcontext.h>
-#include <libime/jyutping/jyutpingdecoder.h>
-#include <libime/jyutping/jyutpingdictionary.h>
+#include <libime/wenzhounese/wenzhounesecontext.h>
+#include <libime/wenzhounese/wenzhounesedecoder.h>
+#include <libime/wenzhounese/wenzhounesedictionary.h>
 #include <memory>
 #include <ostream>
 #include <quickphrase_public.h>
@@ -63,9 +63,9 @@
 
 namespace fcitx {
 
-FCITX_DEFINE_LOG_CATEGORY(jyutping, "jyutping");
+FCITX_DEFINE_LOG_CATEGORY(wenzhounese, "wenzhounese");
 
-#define PINYIN_DEBUG() FCITX_LOGC(jyutping, Debug)
+#define PINYIN_DEBUG() FCITX_LOGC(wenzhounese, Debug)
 
 bool consumePreifx(std::string_view &view, std::string_view prefix) {
     if (boost::starts_with(view, prefix)) {
@@ -75,20 +75,20 @@ bool consumePreifx(std::string_view &view, std::string_view prefix) {
     return false;
 }
 
-class JyutpingState : public InputContextProperty {
+class WenzhouneseState : public InputContextProperty {
 public:
-    JyutpingState(JyutpingEngine *engine) : context_(engine->ime()) {}
+    WenzhouneseState(WenzhouneseEngine *engine) : context_(engine->ime()) {}
 
-    libime::jyutping::JyutpingContext context_;
+    libime::wenzhounese::WenzhouneseContext context_;
     bool lastIsPunc_ = false;
     std::unique_ptr<EventSourceTime> cancelLastEvent_;
 
     std::vector<std::string> predictWords_;
 };
 
-class JyutpingPredictCandidateWord : public CandidateWord {
+class WenzhounesePredictCandidateWord : public CandidateWord {
 public:
-    JyutpingPredictCandidateWord(JyutpingEngine *engine, std::string word)
+    WenzhounesePredictCandidateWord(WenzhouneseEngine *engine, std::string word)
         : CandidateWord(Text(word)), engine_(engine), word_(std::move(word)) {}
 
     void select(InputContext *inputContext) const override {
@@ -106,13 +106,13 @@ public:
         engine_->updatePredict(inputContext);
     }
 
-    JyutpingEngine *engine_;
+    WenzhouneseEngine *engine_;
     std::string word_;
 };
 
 class StrokeCandidateWord : public CandidateWord {
 public:
-    StrokeCandidateWord(JyutpingEngine *engine, std::string hz,
+    StrokeCandidateWord(WenzhouneseEngine *engine, std::string hz,
                         const std::string &py)
         : engine_(engine), hz_(std::move(hz)) {
         if (py.empty()) {
@@ -128,13 +128,13 @@ public:
     }
 
 private:
-    JyutpingEngine *engine_;
+    WenzhouneseEngine *engine_;
     std::string hz_;
 };
 
 class SpellCandidateWord : public CandidateWord {
 public:
-    SpellCandidateWord(JyutpingEngine *engine, std::string word)
+    SpellCandidateWord(WenzhouneseEngine *engine, std::string word)
         : engine_(engine), word_(std::move(word)) {
         setText(Text(word_));
     }
@@ -147,13 +147,13 @@ public:
     }
 
 private:
-    JyutpingEngine *engine_;
+    WenzhouneseEngine *engine_;
     std::string word_;
 };
 
-class JyutpingCandidateWord : public CandidateWord {
+class WenzhouneseCandidateWord : public CandidateWord {
 public:
-    JyutpingCandidateWord(JyutpingEngine *engine, Text text, size_t idx)
+    WenzhouneseCandidateWord(WenzhouneseEngine *engine, Text text, size_t idx)
         : CandidateWord(std::move(text)), engine_(engine), idx_(idx) {}
 
     void select(InputContext *inputContext) const override {
@@ -166,18 +166,18 @@ public:
         engine_->updateUI(inputContext);
     }
 
-    JyutpingEngine *engine_;
+    WenzhouneseEngine *engine_;
     size_t idx_;
 };
 
 std::unique_ptr<CandidateList>
-JyutpingEngine::predictCandidateList(const std::vector<std::string> &words) {
+WenzhouneseEngine::predictCandidateList(const std::vector<std::string> &words) {
     if (words.empty()) {
         return nullptr;
     }
     auto candidateList = std::make_unique<CommonCandidateList>();
     for (const auto &word : words) {
-        candidateList->append<JyutpingPredictCandidateWord>(this, word);
+        candidateList->append<WenzhounesePredictCandidateWord>(this, word);
     }
     candidateList->setSelectionKey(selectionKeys_);
     candidateList->setPageSize(*config_.pageSize);
@@ -187,7 +187,7 @@ JyutpingEngine::predictCandidateList(const std::vector<std::string> &words) {
     return candidateList;
 }
 
-void JyutpingEngine::initPredict(InputContext *inputContext) {
+void WenzhouneseEngine::initPredict(InputContext *inputContext) {
     inputContext->inputPanel().reset();
 
     auto *state = inputContext->propertyFor(&factory_);
@@ -204,7 +204,7 @@ void JyutpingEngine::initPredict(InputContext *inputContext) {
     inputContext->updateUserInterface(UserInterfaceComponent::InputPanel);
 }
 
-void JyutpingEngine::updatePredict(InputContext *inputContext) {
+void WenzhouneseEngine::updatePredict(InputContext *inputContext) {
     inputContext->inputPanel().reset();
 
     auto *state = inputContext->propertyFor(&factory_);
@@ -255,7 +255,7 @@ bool isStroke(const std::string &input) {
                        [](char c) { return py.count(c); });
 }
 
-void JyutpingEngine::updateUI(InputContext *inputContext) {
+void WenzhouneseEngine::updateUI(InputContext *inputContext) {
     inputContext->inputPanel().reset();
 
     auto state = inputContext->propertyFor(&factory_);
@@ -288,7 +288,7 @@ void JyutpingEngine::updateUI(InputContext *inputContext) {
 
             for (const auto &candidate : candidates) {
                 auto candidateString = candidate.toString();
-                candidateList->append<JyutpingCandidateWord>(
+                candidateList->append<WenzhouneseCandidateWord>(
                     this, Text(std::move(candidateString)), idx);
                 idx++;
             }
@@ -348,33 +348,33 @@ void JyutpingEngine::updateUI(InputContext *inputContext) {
     inputContext->updateUserInterface(UserInterfaceComponent::InputPanel);
 }
 
-JyutpingEngine::JyutpingEngine(Instance *instance)
+WenzhouneseEngine::WenzhouneseEngine(Instance *instance)
     : instance_(instance),
-      factory_([this](InputContext &) { return new JyutpingState(this); }) {
-    ime_ = std::make_unique<libime::jyutping::JyutpingIME>(
-        std::make_unique<libime::jyutping::JyutpingDictionary>(),
+      factory_([this](InputContext &) { return new WenzhouneseState(this); }) {
+    ime_ = std::make_unique<libime::wenzhounese::WenzhouneseIME>(
+        std::make_unique<libime::wenzhounese::WenzhouneseDictionary>(),
         std::make_unique<libime::UserLanguageModel>(
             libime::DefaultLanguageModelResolver::instance()
                 .languageModelFileForLanguage("zh_HK")));
 
     const auto &standardPath = StandardPaths::global();
     auto systemDictFile =
-        standardPath.open(StandardPathsType::Data, "libime/jyutping.dict");
+        standardPath.open(StandardPathsType::Data, "libime/wenzhounese.dict");
     if (systemDictFile.isValid()) {
         IFDStreamBuf buffer(systemDictFile.fd());
         std::istream in(&buffer);
-        ime_->dict()->load(libime::jyutping::JyutpingDictionary::SystemDict, in,
-                           libime::jyutping::JyutpingDictFormat::Binary);
+        ime_->dict()->load(libime::wenzhounese::WenzhouneseDictionary::SystemDict, in,
+                           libime::wenzhounese::WenzhouneseDictFormat::Binary);
     } else {
-        ime_->dict()->load(libime::jyutping::JyutpingDictionary::SystemDict,
-                           LIBIME_JYUTPING_INSTALL_PKGDATADIR "/jyutping.dict",
-                           libime::jyutping::JyutpingDictFormat::Binary);
+        ime_->dict()->load(libime::wenzhounese::WenzhouneseDictionary::SystemDict,
+                           LIBIME_WENZHOUNESE_INSTALL_PKGDATADIR "/wenzhounese.dict",
+                           libime::wenzhounese::WenzhouneseDictFormat::Binary);
     }
     prediction_.setUserLanguageModel(ime_->model());
 
     do {
         auto file =
-            standardPath.open(StandardPathsType::PkgData, "jyutping/user.dict",
+            standardPath.open(StandardPathsType::PkgData, "wenzhounese/user.dict",
                               StandardPathsMode::User);
 
         if (file.fd() < 0) {
@@ -384,16 +384,16 @@ JyutpingEngine::JyutpingEngine(Instance *instance)
         try {
             IFDStreamBuf buffer(file.fd());
             std::istream in(&buffer);
-            ime_->dict()->load(libime::jyutping::JyutpingDictionary::UserDict,
+            ime_->dict()->load(libime::wenzhounese::WenzhouneseDictionary::UserDict,
                                in,
-                               libime::jyutping::JyutpingDictFormat::Binary);
+                               libime::wenzhounese::WenzhouneseDictFormat::Binary);
         } catch (const std::exception &) {
         }
     } while (0);
     do {
         auto file =
             standardPath.open(StandardPathsType::PkgData,
-                              "jyutping/user.history", StandardPathsMode::User);
+                              "wenzhounese/user.history", StandardPathsMode::User);
 
         try {
             IFDStreamBuf buffer(file.fd());
@@ -405,7 +405,7 @@ JyutpingEngine::JyutpingEngine(Instance *instance)
 
     ime_->setScoreFilter(1);
     reloadConfig();
-    instance_->inputContextManager().registerProperty("jyutpingState",
+    instance_->inputContextManager().registerProperty("wenzhouneseState",
                                                       &factory_);
     KeySym syms[] = {
         FcitxKey_1, FcitxKey_2, FcitxKey_3, FcitxKey_4, FcitxKey_5,
@@ -430,18 +430,18 @@ JyutpingEngine::JyutpingEngine(Instance *instance)
                                           : "fcitx-remind-inactive");
             predictionAction_.update(ic);
         });
-    instance_->userInterfaceManager().registerAction("jyutping-prediction",
+    instance_->userInterfaceManager().registerAction("wenzhounese-prediction",
                                                      &predictionAction_);
 }
 
-JyutpingEngine::~JyutpingEngine() {}
+WenzhouneseEngine::~WenzhouneseEngine() {}
 
-void JyutpingEngine::reloadConfig() {
-    readAsIni(config_, "conf/jyutping.conf");
+void WenzhouneseEngine::reloadConfig() {
+    readAsIni(config_, "conf/wenzhounese.conf");
     ime_->setNBest(*config_.nbest);
     ime_->setInnerSegment(*config_.inner);
 }
-void JyutpingEngine::activate(const fcitx::InputMethodEntry &,
+void WenzhouneseEngine::activate(const fcitx::InputMethodEntry &,
                               fcitx::InputContextEvent &event) {
     auto *inputContext = event.inputContext();
     // Request full width.
@@ -458,7 +458,7 @@ void JyutpingEngine::activate(const fcitx::InputMethodEntry &,
                                          &predictionAction_);
 }
 
-void JyutpingEngine::deactivate(const fcitx::InputMethodEntry &entry,
+void WenzhouneseEngine::deactivate(const fcitx::InputMethodEntry &entry,
                                 fcitx::InputContextEvent &event) {
     auto *inputContext = event.inputContext();
     if (event.type() == EventType::InputContextSwitchInputMethod) {
@@ -470,9 +470,9 @@ void JyutpingEngine::deactivate(const fcitx::InputMethodEntry &entry,
     reset(entry, event);
 }
 
-void JyutpingEngine::keyEvent(const InputMethodEntry &entry, KeyEvent &event) {
+void WenzhouneseEngine::keyEvent(const InputMethodEntry &entry, KeyEvent &event) {
     FCITX_UNUSED(entry);
-    PINYIN_DEBUG() << "Jyutping receive key: " << event.key() << " "
+    PINYIN_DEBUG() << "Wenzhounese receive key: " << event.key() << " "
                    << event.isRelease();
 
     // by pass all key release
@@ -603,13 +603,13 @@ void JyutpingEngine::keyEvent(const InputMethodEntry &entry, KeyEvent &event) {
             if (state->context_.cursor() == state->context_.selectedLength()) {
                 state->context_.cancel();
             }
-            auto cursor = state->context_.jyutpingBeforeCursor();
+            auto cursor = state->context_.wenzhouneseBeforeCursor();
             if (cursor >= 0) {
                 state->context_.setCursor(cursor);
             }
             event.filterAndAccept();
         } else if (event.key().check(FcitxKey_Right, KeyState::Ctrl)) {
-            auto cursor = state->context_.jyutpingAfterCursor();
+            auto cursor = state->context_.wenzhouneseAfterCursor();
             if (cursor >= 0 &&
                 static_cast<size_t>(cursor) <= state->context_.size()) {
                 state->context_.setCursor(cursor);
@@ -714,12 +714,12 @@ void JyutpingEngine::keyEvent(const InputMethodEntry &entry, KeyEvent &event) {
     }
 }
 
-void JyutpingEngine::reset(const InputMethodEntry &, InputContextEvent &event) {
+void WenzhouneseEngine::reset(const InputMethodEntry &, InputContextEvent &event) {
     auto *inputContext = event.inputContext();
     doReset(inputContext);
 }
 
-void JyutpingEngine::doReset(InputContext *inputContext) {
+void WenzhouneseEngine::doReset(InputContext *inputContext) {
     auto *state = inputContext->propertyFor(&factory_);
     state->context_.clear();
     state->predictWords_.clear();
@@ -729,23 +729,23 @@ void JyutpingEngine::doReset(InputContext *inputContext) {
     // state->lastIsPunc_ = false;
 }
 
-void JyutpingEngine::save() {
-    safeSaveAsIni(config_, "conf/jyutping.conf");
+void WenzhouneseEngine::save() {
+    safeSaveAsIni(config_, "conf/wenzhounese.conf");
     const auto &standardPath = StandardPaths::global();
     standardPath.safeSave(
-        StandardPathsType::PkgData, "jyutping/user.dict", [this](int fd) {
+        StandardPathsType::PkgData, "wenzhounese/user.dict", [this](int fd) {
             OFDStreamBuf buffer(fd);
             std::ostream out(&buffer);
             try {
                 ime_->dict()->save(
-                    libime::jyutping::JyutpingDictionary::UserDict, out,
-                    libime::jyutping::JyutpingDictFormat::Binary);
+                    libime::wenzhounese::WenzhouneseDictionary::UserDict, out,
+                    libime::wenzhounese::WenzhouneseDictFormat::Binary);
                 return static_cast<bool>(out);
             } catch (const std::exception &) {
                 return false;
             }
         });
-    standardPath.safeSave(StandardPathsType::PkgData, "jyutping/user.history",
+    standardPath.safeSave(StandardPathsType::PkgData, "wenzhounese/user.history",
                           [this](int fd) {
                               OFDStreamBuf buffer(fd);
                               std::ostream out(&buffer);
@@ -759,4 +759,4 @@ void JyutpingEngine::save() {
 }
 } // namespace fcitx
 
-FCITX_ADDON_FACTORY_V2(jyutping, fcitx::JyutpingEngineFactory)
+FCITX_ADDON_FACTORY_V2(wenzhounese, fcitx::WenzhouneseEngineFactory)
