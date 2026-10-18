@@ -118,7 +118,7 @@ jobs:
             build/windows/dist/*.sha256
   release:
     name: Publish Nightly Build
-    needs: build-windows
+    needs: [build-windows, check]
     if: ${{ github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && !contains(github.event.head_commit.message, '!release') }}
     runs-on: ubuntu-latest
     permissions:
@@ -131,6 +131,10 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: Fcitx5-Wenzhounese-windows-x64
+      - name: Download Linux plugin
+        uses: actions/download-artifact@v8
+        with:
+          name: Fcitx5-Wenzhounese-archlinux-x86_64
       - name: Create Nightly release
         shell: bash
         env:
@@ -139,7 +143,12 @@ jobs:
         run: |
           set -euo pipefail
           shopt -s failglob
-          files=(Fcitx5-Wenzhounese-*-windows-x64.zip Fcitx5-Wenzhounese-*-windows-x64.zip.sha256)
+          files=(
+            Fcitx5-Wenzhounese-*-windows-x64.zip
+            Fcitx5-Wenzhounese-*-windows-x64.zip.sha256
+            Fcitx5-Wenzhounese-*-archlinux-x86_64.tar.zst
+            Fcitx5-Wenzhounese-*-archlinux-x86_64.tar.zst.sha256
+          )
           sha256sum --check -- *.sha256
           release_id=$(gh api "repos/$GH_REPO/releases" --paginate \
             --jq '.[] | select(.tag_name == "latest") | .id')
@@ -169,10 +178,16 @@ jobs:
       - uses: actions/checkout@v4
       - uses: fcitx/github-actions@clang-format
   check:
-    name: Build and test
+    name: Build and verify Linux
     needs: clang-format
     runs-on: ubuntu-latest
     container: archlinux:latest
+    permissions:
+      contents: read
+      security-events: write
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
@@ -185,11 +200,13 @@ jobs:
     env:
       CC: ${{ matrix.compiler }}
       CXX: ${{ matrix.cxx_compiler }}
+      CMAKE_PREFIX_PATH: /opt/fcitx
+      LD_LIBRARY_PATH: /opt/fcitx/lib
     steps:
       - name: Install dependencies
         run: |
-          pacman -Syu --noconfirm base-devel clang cmake ninja extra-cmake-modules fmt libuv boost git qt6-base qt6-wayland libxkbcommon qt6-webengine lua opencc
-      - uses: actions/checkout@v4
+          pacman -Syu --noconfirm base-devel clang cmake ninja extra-cmake-modules fmt libuv boost boost-libs git git-lfs nlohmann-json python unzip zstd qt6-base qt6-wayland libxkbcommon qt6-webengine lua opencc
+      - uses: actions/checkout@v6
         with:
           repository: fcitx/fcitx5
           path: fcitx5
@@ -206,7 +223,7 @@ jobs:
           cmake-option: >-
             -DENABLE_KEYBOARD=Off -DENABLE_X11=Off -DENABLE_WAYLAND=Off -DENABLE_ENCHANT=Off
             -DENABLE_DBUS=Off -DENABLE_SERVER=Off -DENABLE_EMOJI=Off -DUSE_SYSTEMD=Off
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           repository: fcitx/libime
           path: libime
@@ -220,7 +237,7 @@ jobs:
         uses: fcitx/github-actions@cmake
         with:
           path: libime
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           repository: fcitx/fcitx5-chinese-addons
           path: fcitx5-chinese-addons
@@ -230,20 +247,118 @@ jobs:
           path: fcitx5-chinese-addons
           cmake-option: >-
             -DENABLE_GUI=Off
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
-          path: libime-jyutping
+          path: fcitx5-wenzhounese
+          lfs: true
       - name: Init CodeQL
-        uses: github/codeql-action/init@v3
+        if: matrix.compiler == 'gcc'
+        uses: github/codeql-action/init@v4
         with:
           languages: cpp
-          source-root: libime-jyutping
-      - name: Build and Install libime-jyutping
-        uses: fcitx/github-actions@cmake
-        with:
-          path: libime-jyutping
-      - name: Test
+          source-root: fcitx5-wenzhounese
+          build-mode: manual
+      - name: Build Wenzhounese for the system prefix
         run: |
-          ctest --test-dir libime-jyutping/build
+          cmake -S fcitx5-wenzhounese -B fcitx5-wenzhounese/build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib \
+            -DFCITX_INSTALL_USE_FCITX_SYS_PATHS=OFF -DCMAKE_SKIP_INSTALL_RPATH=ON -DENABLE_TEST=OFF
+          cmake --build fcitx5-wenzhounese/build --parallel 2
+      - name: Verify dictionary payload
+        run: |
+          set -euo pipefail
+          # The binary dictionary has two uint32_t header fields before its Zstd frame.
+          tail -c +9 fcitx5-wenzhounese/build/data/wenzhounese.dict | zstd --test --quiet
       - name: CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        if: matrix.compiler == 'gcc'
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:cpp/compiler:gcc
+      - name: Stage Linux runtime files
+        run: |
+          set -euo pipefail
+          stage="$RUNNER_TEMP/linux-stage"
+          DESTDIR="$stage" cmake --install fcitx5-wenzhounese/build --strip
+          rm -rf "$stage/usr/include" "$stage/usr/lib/cmake" "$stage/usr/bin"
+          install -Dm644 fcitx5-wenzhounese/README.md "$stage/usr/share/doc/fcitx5-wenzhounese/README.md"
+          cp -r fcitx5-wenzhounese/LICENSES "$stage/usr/share/doc/fcitx5-wenzhounese/LICENSES"
+          for file in \
+            usr/lib/libIMEWenzhounese.so.1 \
+            usr/lib/fcitx5/libwenzhounese.so \
+            usr/lib/libime/wenzhounese.lm \
+            usr/lib/libime/wenzhounese.lm.predict \
+            usr/share/libime/wenzhounese.dict \
+            usr/share/fcitx5/addon/wenzhounese.conf \
+            usr/share/fcitx5/inputmethod/wenzhounese.conf; do
+            test -s "$stage/$file"
+          done
+          test -z "$(find "$stage" -mindepth 1 -maxdepth 1 ! -name usr -print)"
+          for file in "$stage"/usr/lib/libIMEWenzhounese.so.* "$stage/usr/lib/fcitx5/libwenzhounese.so"; do
+            readelf -h "$file" | grep -q 'Advanced Micro Devices X86-64'
+            if readelf -d "$file" | grep -E '(RPATH|RUNPATH)' | grep -q .; then
+              echo "Unexpected runtime library search path: $file" >&2
+              exit 1
+            fi
+          done
+          LD_LIBRARY_PATH="$stage/usr/lib:$LD_LIBRARY_PATH" python - "$stage" <<'PY'
+          import ctypes
+          import os
+          import pathlib
+          import sys
+
+          plugin = pathlib.Path(sys.argv[1]) / 'usr/lib/fcitx5/libwenzhounese.so'
+          library = ctypes.CDLL(str(plugin), mode=os.RTLD_NOW)
+          factory = library.fcitx_addon_factory_instance_wenzhounese
+          factory.restype = ctypes.c_void_p
+          if not factory():
+              raise SystemExit('Wenzhounese addon factory returned null')
+          print('PASS: staged Linux addon and shared dependencies loaded')
+          PY
+      - name: Package Linux plugin
+        if: matrix.compiler == 'gcc'
+        env:
+          PACKAGE_NAME: Fcitx5-Wenzhounese-${{ github.run_number }}-archlinux-x86_64
+        run: |
+          set -euo pipefail
+          stage="$RUNNER_TEMP/linux-stage"
+          python - "$stage" <<'PY'
+          import json
+          import os
+          import pathlib
+          import subprocess
+          import sys
+
+          def output(*args):
+              return subprocess.check_output(args, text=True).strip()
+
+          info = {
+              'distribution': 'Arch Linux',
+              'architecture': 'x86_64',
+              'prefix': '/usr',
+              'pluginRepository': os.environ['GITHUB_REPOSITORY'],
+              'pluginRevision': os.environ['GITHUB_SHA'],
+              'compiler': output(os.environ['CXX'], '--version').splitlines()[0],
+              'systemPackages': output('pacman', '-Q').splitlines(),
+              'dependencies': {
+                  name: output('git', '-C', name, 'rev-parse', 'HEAD')
+                  for name in ('fcitx5', 'libime', 'fcitx5-chinese-addons')
+              },
+          }
+          path = pathlib.Path(sys.argv[1]) / 'usr/share/doc/fcitx5-wenzhounese/build-info.json'
+          path.write_text(json.dumps(info, indent=2) + '\n', encoding='utf-8')
+          PY
+          mkdir -p dist/linux
+          tar --zstd -cf "dist/linux/$PACKAGE_NAME.tar.zst" -C "$stage" usr
+          cd dist/linux
+          sha256sum "$PACKAGE_NAME.tar.zst" > "$PACKAGE_NAME.tar.zst.sha256"
+          sha256sum --check "$PACKAGE_NAME.tar.zst.sha256"
+      - name: Upload Linux plugin
+        if: matrix.compiler == 'gcc'
+        uses: actions/upload-artifact@v7
+        with:
+          name: Fcitx5-Wenzhounese-archlinux-x86_64
+          compression-level: 0
+          if-no-files-found: error
+          path: |
+            dist/linux/*.tar.zst
+            dist/linux/*.sha256

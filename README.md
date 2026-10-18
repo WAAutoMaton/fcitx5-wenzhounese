@@ -16,6 +16,14 @@ cmake -B build -S . \
 cmake --build build
 ```
 
+### Linux Nightly 插件
+
+[Nightly Build](https://github.com/WAAutoMaton/fcitx5-wenzhounese/releases/tag/latest) 同时提供 `Fcitx5-Wenzhounese-<构建号>-archlinux-x86_64.tar.zst` 和 SHA256 校验文件。该包使用 Arch Linux x86_64 和 GCC 构建，包含温州话插件、私有共享库、词典、语言模型及翻译，使用标准 `/usr` 安装布局。
+
+这不是跨发行版通用包，也不是可直接交给 `pacman -U` 的 Arch 软件包。使用前需安装 ABI 兼容的 Fcitx5、libime、fcitx5-chinese-addons、Boost 和 zstd；构建依赖的源码提交号及系统库版本记录在包内的 `usr/share/doc/fcitx5-wenzhounese/build-info.json`。其他发行版或较旧系统建议从源码构建。
+
+先验证 SHA256，再解压到临时目录检查文件；确认依赖兼容后，将其中的 `usr` 目录内容安装到系统 `/usr`，然后重启 Fcitx5，在配置工具中添加温州话。手动安装不会纳入包管理器，更新或卸载时需按归档中的文件列表管理。
+
 ### Windows 插件
 
 使用 `fcitx5-windows` 提供的 Core/libime SDK 独立构建，脚本位于本仓库的 `scripts/build-windows.ps1`，无需将输入法加入 Core 的构建目标。
