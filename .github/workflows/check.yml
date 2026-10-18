@@ -262,8 +262,10 @@ jobs:
         run: |
           cmake -S fcitx5-wenzhounese -B fcitx5-wenzhounese/build -G Ninja \
             -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib \
-            -DFCITX_INSTALL_USE_FCITX_SYS_PATHS=OFF -DCMAKE_SKIP_INSTALL_RPATH=ON -DENABLE_TEST=OFF
+            -DFCITX_INSTALL_USE_FCITX_SYS_PATHS=OFF -DCMAKE_SKIP_INSTALL_RPATH=ON -DENABLE_TEST=ON
           cmake --build fcitx5-wenzhounese/build --parallel 2
+      - name: Test dictionary export
+        run: ctest --test-dir fcitx5-wenzhounese/build --output-on-failure --no-tests=error
       - name: Verify dictionary payload
         run: |
           set -euo pipefail

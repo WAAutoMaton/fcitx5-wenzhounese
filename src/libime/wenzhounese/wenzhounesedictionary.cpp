@@ -723,7 +723,9 @@ void WenzhouneseDictionary::saveText(size_t idx, std::ostream &out) {
     trie.foreach([this, &trie, &buf, &out](float value, size_t _len,
                                            WenzhouneseTrie::position_type pos) {
         trie.suffix(buf, _len, pos);
-        auto sep = buf.find(wenzhouneseHanziSep);
+        // Initial/final codes can contain the separator byte. Search backward
+        // from the text word to find the boundary after the encoded syllables.
+        auto sep = buf.rfind(wenzhouneseHanziSep);
         if (sep == std::string::npos) {
             return true;
         }

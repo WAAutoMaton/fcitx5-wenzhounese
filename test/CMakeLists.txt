@@ -16,3 +16,7 @@
 #
 # add_executable(testime testime.cpp)
 # target_link_libraries(testime LibIME::Wenzhounese)
+
+add_executable(testdictionaryexport testdictionaryexport.cpp)
+target_link_libraries(testdictionaryexport LibIME::Wenzhounese)
+add_test(NAME testdictionaryexport COMMAND testdictionaryexport)

@@ -44,14 +44,14 @@ if(ENABLE_ENGINE)
     add_subdirectory(po)
 endif()
 
-# if(ENABLE_TEST)
-#     enable_testing()
-#     # add_subdirectory(test)
-# endif()
-
 add_subdirectory(src)
 add_subdirectory(tools)
 add_subdirectory(data)
+
+if(ENABLE_TEST)
+    enable_testing()
+    add_subdirectory(test)
+endif()
 
 if (ENABLE_DOC)
   find_package(Doxygen REQUIRED)
