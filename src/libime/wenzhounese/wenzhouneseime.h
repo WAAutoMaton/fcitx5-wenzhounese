@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
  */
-#ifndef _LIBIME_WENZHOUNESE_LIBIME_WENZHOUNESE_WENZHOUNESEIME_H_
-#define _LIBIME_WENZHOUNESE_LIBIME_WENZHOUNESE_WENZHOUNESEIME_H_
+#ifndef _LIBIME_WENZHOUNESE_WENZHOUNESEIME_H_
+#define _LIBIME_WENZHOUNESE_WENZHOUNESEIME_H_
 
 #include "libimewenzhounese_export.h"
 #include <fcitx-utils/connectableobject.h>
@@ -62,4 +62,4 @@ private:
 } // namespace wenzhounese
 } // namespace libime
 
-#endif // _LIBIME_WENZHOUNESE_LIBIME_WENZHOUNESE_WENZHOUNESEIME_H_
+#endif // _LIBIME_WENZHOUNESE_WENZHOUNESEIME_H_

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: fcitx5-wenzhounese\n"
-"Report-Msgid-Bugs-To: fcitx-dev@googlegroups.com\n"
+"Report-Msgid-Bugs-To: https://github.com/WAAutoMaton/fcitx5-wenzhounese/issues\n"
 "POT-Creation-Date: 2025-02-21 20:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"

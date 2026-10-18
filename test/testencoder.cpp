@@ -58,14 +58,14 @@ int main() {
         std::cout << encode << "," << std::endl;
     }
 
-    dfs(WenzhouneseEncoder::parseUserWenzhounese("sangwut"));
+    dfs(WenzhouneseEncoder::parseUserWenzhounese("siaehho"));
     dfs(WenzhouneseEncoder::parseUserWenzhounese("ngng"));
-    dfs(WenzhouneseEncoder::parseUserWenzhounese("ngaat"));
-    dfs(WenzhouneseEncoder::parseUserWenzhounese("ngngaat"));
-    dfs(WenzhouneseEncoder::parseUserWenzhounese("neizaudaajatgeoi"));
-    dfs(WenzhouneseEncoder::parseUserWenzhounese("jinhauonjathaa"));
-    dfs(WenzhouneseEncoder::parseUserWenzhounese("jinha"));
-    dfs(WenzhouneseEncoder::parseUserWenzhounese("jinhau"));
+    dfs(WenzhouneseEncoder::parseUserWenzhounese("nga"));
+    dfs(WenzhouneseEncoder::parseUserWenzhounese("ngnga"));
+    dfs(WenzhouneseEncoder::parseUserWenzhounese("nyihe"));
+    dfs(WenzhouneseEncoder::parseUserWenzhounese("nyi'he"));
+    dfs(WenzhouneseEncoder::parseUserWenzhounese("ivjeu"));
+    dfs(WenzhouneseEncoder::parseUserWenzhounese("uangjeu"));
 
     return 0;
 }

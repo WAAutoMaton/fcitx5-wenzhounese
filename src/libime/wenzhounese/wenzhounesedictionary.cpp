@@ -45,7 +45,7 @@ struct WenzhouneseSegmentGraphPathHasher {
 
     // Generate a "|" separated raw wenzhounese string from given path, skip all
     // separator.
-    std::string pathToWenzhouneses(const SegmentGraphPath &path) const {
+    std::string pathToSyllables(const SegmentGraphPath &path) const {
         std::string result;
         result.reserve(path.size() + path.back()->index() -
                        path.front()->index() + 1);
@@ -94,7 +94,7 @@ struct WenzhouneseSegmentGraphPathHasher {
     }
 
     // Check equality of wenzhounese string and the path. The string s should be
-    // equal to pathToWenzhouneses(path), but this function just try to avoid
+    // equal to pathToSyllables(path), but this function just try to avoid
     // allocate a string for comparisin.
     bool operator()(const SegmentGraphPath &path, const std::string &s) const {
         if (path.size() <= 1) {
@@ -264,8 +264,7 @@ traverseAlongPathOneStepBySyllables(const MatchedWenzhounesePath &path,
                     updateNext(static_cast<char>(final.first), 0, pos);
                 }
             } else {
-                // Assign a different factory for "m" and "ng", since these
-                // character can only be matched with "m" or "ng".
+                // Prefer standalone syllables over initial-only matches.
                 int fuzzyFactor = WenzhouneseEncoder::isValidInitialFinal(
                                       syl.first, WenzhouneseFinal::Zero)
                                       ? 10
@@ -328,8 +327,8 @@ bool WenzhouneseDictionaryPrivate::matchWordsForOnePath(
         auto result =
             matchCache.find(path.path_, context.hasher_, context.hasher_);
         if (!result) {
-            result = matchCache.insert(
-                context.hasher_.pathToWenzhouneses(path.path_));
+            result =
+                matchCache.insert(context.hasher_.pathToSyllables(path.path_));
             result->clear();
 
             auto &items = *result;
@@ -419,8 +418,8 @@ void WenzhouneseDictionaryPrivate::findMatchesBetween(
             if (!p) {
                 result = std::make_shared<MatchedWenzhouneseTrieNodes>(
                     path.trie(), path.size() + 1);
-                nodeCache.insert(
-                    context.hasher_.pathToWenzhouneses(segmentPath), result);
+                nodeCache.insert(context.hasher_.pathToSyllables(segmentPath),
+                                 result);
                 result->triePositions_ =
                     traverseAlongPathOneStepBySyllables(path, syls);
             } else {

@@ -1,13 +1,13 @@
 INPUT                  = src/libime
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = libime
+PROJECT_NAME           = fcitx5-wenzhounese
 OUTPUT_LANGUAGE        = English
 SOURCE_BROWSER         = YES
 FILE_PATTERNS          =
 QT_AUTOBRIEF           = YES
 RECURSIVE              = YES
 STRIP_CODE_COMMENTS    = NO
-EXCLUDE_PATTERNS       = "*/*_p.h" "*/src/libime/kenlm/*"
+EXCLUDE_PATTERNS       = "*/*_p.h"
 ENABLE_PREPROCESSING   = YES
 MACRO_EXPANSION        = YES
 

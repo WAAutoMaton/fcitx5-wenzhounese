@@ -21,31 +21,28 @@ int main() {
     using namespace libime::wenzhounese;
     WenzhouneseDictionary dict;
     dict.load(WenzhouneseDictionary::SystemDict,
-              LIBIME_BINARY_DIR "/data/wenzhounese.dict",
+              WENZHOUNESE_BINARY_DIR "/data/wenzhounese.dict",
               WenzhouneseDictFormat::Binary);
 
-    char c[] = {static_cast<char>(WenzhouneseInitial::J),
-                static_cast<char>(WenzhouneseFinal::IN),
-                static_cast<char>(WenzhouneseInitial::H),
-                static_cast<char>(WenzhouneseFinal::AU)};
-    dict.matchWords(c, 2,
-                    [c](std::string_view encodedWenzhounese,
-                        std::string_view hanzi, float cost) {
+    const auto syllables = WenzhouneseEncoder::encodeFullWenzhounese("nyi'he");
+    dict.matchWords(syllables.data(), 2,
+                    [](std::string_view encodedWenzhounese,
+                       std::string_view hanzi, float cost) {
                         std::cout << WenzhouneseEncoder::decodeFullWenzhounese(
                                          encodedWenzhounese)
                                   << " " << hanzi << " " << cost << std::endl;
                         return true;
                     });
-    dict.matchWords(c + 2, 2,
-                    [c](std::string_view encodedWenzhounese,
-                        std::string_view hanzi, float cost) {
+    dict.matchWords(syllables.data() + 2, 2,
+                    [](std::string_view encodedWenzhounese,
+                       std::string_view hanzi, float cost) {
                         std::cout << WenzhouneseEncoder::decodeFullWenzhounese(
                                          encodedWenzhounese)
                                   << " " << hanzi << " " << cost << std::endl;
                         return true;
                     });
 
-    auto graph = WenzhouneseEncoder::parseUserWenzhounese("jinhau", true);
+    auto graph = WenzhouneseEncoder::parseUserWenzhounese("nyihe", true);
     dict.matchPrefix(graph,
                      [&graph](const SegmentGraphPath &path, WordNode &node,
                               float, std::unique_ptr<LatticeNodeData>) {
@@ -56,7 +53,7 @@ int main() {
                          return true;
                      });
 
-    dict.save(0, LIBIME_BINARY_DIR "/test/testwenzhounesedictionary.dict",
+    dict.save(0, WENZHOUNESE_BINARY_DIR "/test/testwenzhounesedictionary.dict",
               WenzhouneseDictFormat::Binary);
     // dict.save(0, std::cout, WenzhouneseDictFormat::Text);
     return 0;

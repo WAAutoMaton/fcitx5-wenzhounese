@@ -2,6 +2,6 @@
 Name=Wenzhounese
 Icon=fcitx-wenzhounese
 Label=温
-LangCode=zh_HK
+LangCode=wuu
 Addon=wenzhounese
 Configurable=True

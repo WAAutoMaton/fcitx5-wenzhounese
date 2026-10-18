@@ -103,13 +103,13 @@ plugins/wenzhounese/
 ```powershell
 $sdk = (Resolve-Path ../fcitx5-windows/build/all/prefix).Path.Replace('\', '/')
 $plugin = (Resolve-Path ./build/windows/package).Path.Replace('\', '/')
-& "$sdk/bin/addon_probe.exe" "$sdk" "$plugin" wenzhounese nei
+& "$sdk/bin/addon_probe.exe" "$sdk" "$plugin" wenzhounese nyi
 ```
 
 验证自动发现时，将包安装到隔离 Core 树的 `plugins/wenzhounese`，再运行：
 
 ```powershell
-& "$sdk/bin/addon_probe.exe" "$sdk" --default wenzhounese nei
+& "$sdk/bin/addon_probe.exe" "$sdk" --default wenzhounese nyi
 ```
 
 该检查覆盖输入法发现、DLL 加载、配置读取和候选提交，不启动 Pipe 服务或注册 TSF；真实 Windows 应用中的 TSF 输入仍需单独验收。
@@ -191,3 +191,5 @@ TODO...
 ## 鸣谢
 
 项目中使用的字典文件来自 libpinyin, libime-jyutping, 和 [rime-wenzhounese](https://github.com/ZWolken/rime-wenzhounese)，并使用 GPLv3+ 协议发布。
+
+语言模型沿用上游数据，源码文件为 `data/wenzhounese.arpa`。

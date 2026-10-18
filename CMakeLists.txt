@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(libime-wenzhounese VERSION 1.0.14)
+project(fcitx5-wenzhounese VERSION 1.0.14)
 
 set(REQUIRED_FCITX_VERSION 5.1.13)
 find_package(ECM 1.0 REQUIRED)

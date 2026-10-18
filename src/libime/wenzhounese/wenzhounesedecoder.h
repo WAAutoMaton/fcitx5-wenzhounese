@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
  */
-#ifndef _LIBIME_WENZHOUNESE_LIBIME_WENZHOUNESE_WENZHOUNESEDECODER_H_
-#define _LIBIME_WENZHOUNESE_LIBIME_WENZHOUNESE_WENZHOUNESEDECODER_H_
+#ifndef _LIBIME_WENZHOUNESE_WENZHOUNESEDECODER_H_
+#define _LIBIME_WENZHOUNESE_WENZHOUNESEDECODER_H_
 
 #include "libimewenzhounese_export.h"
 #include <libime/core/decoder.h>
@@ -48,4 +48,4 @@ protected:
 } // namespace wenzhounese
 } // namespace libime
 
-#endif // _LIBIME_WENZHOUNESE_LIBIME_WENZHOUNESE_WENZHOUNESEDECODER_H_
+#endif // _LIBIME_WENZHOUNESE_WENZHOUNESEDECODER_H_

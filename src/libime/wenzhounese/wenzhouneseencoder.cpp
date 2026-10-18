@@ -70,7 +70,7 @@ std::pair<std::string_view, bool> longestMatch(Iter iter, Iter end) {
     for (; range.size(); range.remove_suffix(1)) {
         auto iterPair = map.equal_range(range);
         if (iterPair.first != iterPair.second) {
-            // do not consider m/ng as complete wenzhounese
+            // Treat m/ng as initials so partial input can match any final.
             return std::make_pair(range, (range != "m" && range != "ng"));
         }
         if (range.size() <= 2) {
@@ -126,17 +126,13 @@ WenzhouneseEncoder::parseUserWenzhounese(std::string userWenzhounese,
         bool isCompleteWenzhounese;
         std::tie(str, isCompleteWenzhounese) = longestMatch(iter, end);
 
-        // it's not complete a wenzhounese, no need to try
+        // An incomplete syllable has no alternative segmentation.
         if (!isCompleteWenzhounese) {
             result.addNext(top, top + str.size());
             q.push(top + str.size());
         } else {
-            // check fuzzy seg
-            // wenzhounese may end with aegikmnoptu
-            // and may start with abcdefghjklmnopstuwz.
-            // the intersection is aegkmnoptu.
-            // also, make sure current wenzhounese does not end with a
-            // separator.
+            // A trailing g, i, u or v may begin the next Wenzhounese
+            // syllable. Try both boundaries unless a separator fixes it.
             auto &map = getWenzhouneseMap();
             std::array<size_t, 2> nextSize;
             size_t nNextSize = 0;
@@ -145,7 +141,7 @@ WenzhouneseEncoder::parseUserWenzhounese(std::string userWenzhounese,
                 (str.back() == 'g' || str.back() == 'i' || str.back() == 'u' ||
                  str.back() == 'v') &&
                 map.find(str.substr(0, str.size() - 1)) != map.end()) {
-                // str[0:-1] is also a full wenzhounese, check next wenzhounese
+                // Compare the following syllable at each possible boundary.
                 auto nextMatch = longestMatch(iter + str.size(), end);
                 auto nextMatchAlt = longestMatch(iter + str.size() - 1, end);
                 auto matchSize = str.size() + nextMatch.first.size();
@@ -351,8 +347,7 @@ WenzhouneseEncoder::stringToSyllables(std::string_view wenzhounese) {
                           std::vector<std::pair<WenzhouneseFinal, bool>>>>
         result;
     auto &map = getWenzhouneseMap();
-    // we only want {M,N,R}/Invalid instead of {M,N,R}/Zero, so we could get
-    // match for everything.
+    // Use an unspecified final for m/ng so these initials match all finals.
     if (wenzhounese != "m" && wenzhounese != "ng") {
         auto iterPair = map.equal_range(wenzhounese);
         for (auto &item :
@@ -379,14 +374,14 @@ WenzhouneseEncoder::stringToSyllables(std::string_view wenzhounese) {
 
 std::vector<char>
 WenzhouneseEncoder::encodeFullWenzhounese(std::string_view wenzhounese) {
-    std::vector<std::string> wenzhouneses;
-    boost::split(wenzhouneses, wenzhounese, boost::is_any_of("'"));
+    std::vector<std::string> syllables;
+    boost::split(syllables, wenzhounese, boost::is_any_of("'"));
     std::vector<char> result;
-    result.resize(wenzhouneses.size() * 2);
+    result.resize(syllables.size() * 2);
     int idx = 0;
-    for (const auto &singleWenzhounese : wenzhouneses) {
+    for (const auto &syllable : syllables) {
         auto &map = getWenzhouneseMap();
-        auto iter = map.find(singleWenzhounese);
+        auto iter = map.find(syllable);
         if (iter == map.end()) {
             throw std::invalid_argument("invalid full wenzhounese: " +
                                         std::string{wenzhounese});

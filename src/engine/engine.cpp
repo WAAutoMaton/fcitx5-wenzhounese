@@ -66,7 +66,7 @@ namespace fcitx {
 
 FCITX_DEFINE_LOG_CATEGORY(wenzhounese, "wenzhounese");
 
-#define PINYIN_DEBUG() FCITX_LOGC(wenzhounese, Debug)
+#define WENZHOUNESE_DEBUG() FCITX_LOGC(wenzhounese, Debug)
 
 bool consumePreifx(std::string_view &view, std::string_view prefix) {
     if (boost::starts_with(view, prefix)) {
@@ -483,8 +483,8 @@ void WenzhouneseEngine::deactivate(const fcitx::InputMethodEntry &entry,
 void WenzhouneseEngine::keyEvent(const InputMethodEntry &entry,
                                  KeyEvent &event) {
     FCITX_UNUSED(entry);
-    PINYIN_DEBUG() << "Wenzhounese receive key: " << event.key() << " "
-                   << event.isRelease();
+    WENZHOUNESE_DEBUG() << "Wenzhounese receive key: " << event.key() << " "
+                        << event.isRelease();
 
     // by pass all key release
     if (event.isRelease()) {
@@ -649,7 +649,7 @@ void WenzhouneseEngine::keyEvent(const InputMethodEntry &entry,
         if (event.key().check(FcitxKey_BackSpace)) {
             if (lastIsPunc) {
                 auto puncStr = punctuation()->call<IPunctuation::cancelLast>(
-                    "zh_HK", inputContext);
+                    "zh_CN", inputContext);
                 if (!puncStr.empty()) {
                     // forward the original key is the best choice.
                     auto ref = inputContext->watch();
@@ -684,7 +684,7 @@ void WenzhouneseEngine::keyEvent(const InputMethodEntry &entry,
                     inputContext);
             }
             auto punc = punctuation()->call<IPunctuation::pushPunctuation>(
-                "zh_HK", inputContext, c);
+                "zh_CN", inputContext, c);
             if (event.key().check(FcitxKey_semicolon) && quickphrase()) {
                 auto keyString = utf8::UCS4ToUTF8(c);
                 // s is punc or key

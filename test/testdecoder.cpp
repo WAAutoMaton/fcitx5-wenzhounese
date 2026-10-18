@@ -28,6 +28,7 @@ void testTime(WenzhouneseDictionary &, Decoder &decoder,
                    std::numeric_limits<float>::max(),
                    -std::numeric_limits<float>::max(), Decoder::beamSizeDefault,
                    Decoder::frameSizeDefault, nullptr);
+    FCITX_ASSERT(lattice.sentenceSize() > 0);
     for (size_t i = 0, e = lattice.sentenceSize(); i < e; i++) {
         auto &sentence = lattice.sentence(i);
         for (auto &p : sentence.sentence()) {
@@ -40,11 +41,11 @@ void testTime(WenzhouneseDictionary &, Decoder &decoder,
 int main() {
     WenzhouneseDictionary dict;
     dict.load(WenzhouneseDictionary::SystemDict,
-              LIBIME_BINARY_DIR "/data/wenzhounese.dict",
+              WENZHOUNESE_BINARY_DIR "/data/wenzhounese.dict",
               WenzhouneseDictFormat::Binary);
-    LanguageModel model(LIBIME_BINARY_DIR "/data/zh_HK.lm");
+    LanguageModel model(WENZHOUNESE_BINARY_DIR "/data/wenzhounese.lm");
     WenzhouneseDecoder decoder(&dict, &model);
-    testTime(dict, decoder, "jinhau");
+    testTime(dict, decoder, "nyihe");
 
     return 0;
 }

@@ -47,22 +47,10 @@ const std::vector<bool> &getEncodedInitialFinal() {
 
 const std::unordered_map<std::string, std::pair<std::string, std::string>> &
 getInnerSegment() {
+    // TODO: Define inner splits for the Wenzhounese spelling scheme.
     static const std::unordered_map<std::string,
                                     std::pair<std::string, std::string>>
-        innerSegment = {
-            /* TODO: 暂时先清空，之后再研究怎么加回来
-            {"ceoi", {"ce", "oi"}}, {"ceon", {"ce", "on"}},
-            {"deoi", {"de", "oi"}}, {"deon", {"de", "on"}},
-            {"geoi", {"ge", "oi"}}, {"jeoi", {"je", "oi"}},
-            {"jeon", {"je", "on"}}, {"keoi", {"ke", "oi"}},
-            {"leoi", {"le", "oi"}}, {"leon", {"le", "on"}},
-            {"loei", {"lo", "ei"}}, {"naai", {"na", "ai"}},
-            {"naam", {"na", "am"}}, {"naau", {"na", "au"}},
-            {"neoi", {"ne", "oi"}}, {"seoi", {"se", "oi"}},
-            {"seon", {"se", "on"}}, {"zeoi", {"ze", "oi"}},
-            {"zeon", {"ze", "on"}},
-            */
-    };
+        innerSegment;
 
     return innerSegment;
 }

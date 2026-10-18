@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
  */
-#ifndef _LIBIME_WENZHOUNESE_LIBIME_WENZHOUNESE_UTILS_P_H_
-#define _LIBIME_WENZHOUNESE_LIBIME_WENZHOUNESE_UTILS_P_H_
+#ifndef _LIBIME_WENZHOUNESE_UTILS_P_H_
+#define _LIBIME_WENZHOUNESE_UTILS_P_H_
 
 #include "endian_p.h"
 #include <cstdint>
@@ -58,4 +58,4 @@ inline void throw_if_io_fail(const std::ios &s) {
 
 } // namespace libime
 
-#endif // _LIBIME_WENZHOUNESE_LIBIME_WENZHOUNESE_UTILS_P_H_
+#endif // _LIBIME_WENZHOUNESE_UTILS_P_H_

@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  */
-#ifndef _FCITX_LIBIME_WENZHOUNESE_WENZHOUNESEDATA_H_
-#define _FCITX_LIBIME_WENZHOUNESE_WENZHOUNESEDATA_H_
+#ifndef _LIBIME_WENZHOUNESE_WENZHOUNESEDATA_H_
+#define _LIBIME_WENZHOUNESE_WENZHOUNESEDATA_H_
 
 #include "libimewenzhounese_export.h"
 #include <boost/multi_index/hashed_index.hpp>
@@ -62,4 +62,4 @@ LIBIMEWENZHOUNESE_EXPORT const
 } // namespace wenzhounese
 } // namespace libime
 
-#endif // _FCITX_LIBIME_WENZHOUNESE_WENZHOUNESEDATA_H_
+#endif // _LIBIME_WENZHOUNESE_WENZHOUNESEDATA_H_

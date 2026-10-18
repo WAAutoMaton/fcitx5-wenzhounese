@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
  */
-#ifndef _LIBIME_WENZHOUNESE_LIBIME_WENZHOUNESE_ENDIAN_P_H_
-#define _LIBIME_WENZHOUNESE_LIBIME_WENZHOUNESE_ENDIAN_P_H_
+#ifndef _LIBIME_WENZHOUNESE_ENDIAN_P_H_
+#define _LIBIME_WENZHOUNESE_ENDIAN_P_H_
 
 #include <cstdint>
 #if defined(__linux__) || defined(__GLIBC__) || defined(__EMSCRIPTEN__)
@@ -50,4 +50,4 @@
 #include <sys/endian.h> // IWYU pragma: export
 #endif
 
-#endif // _LIBIME_WENZHOUNESE_LIBIME_WENZHOUNESE_ENDIAN_P_H_
+#endif // _LIBIME_WENZHOUNESE_ENDIAN_P_H_

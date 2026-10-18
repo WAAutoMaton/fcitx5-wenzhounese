@@ -28,11 +28,11 @@ using namespace libime::wenzhounese;
 int main(int argc, char *argv[]) {
     fcitx::Log::setLogRule("libime=5");
     WenzhouneseIME ime(std::make_unique<WenzhouneseDictionary>(),
-                       std::make_unique<UserLanguageModel>(LIBIME_BINARY_DIR
-                                                           "/data/zh_HK.lm"));
+                       std::make_unique<UserLanguageModel>(
+                           WENZHOUNESE_BINARY_DIR "/data/wenzhounese.lm"));
     ime.setNBest(2);
     ime.dict()->load(WenzhouneseDictionary::SystemDict,
-                     LIBIME_BINARY_DIR "/data/wenzhounese.dict",
+                     WENZHOUNESE_BINARY_DIR "/data/wenzhounese.dict",
                      WenzhouneseDictFormat::Binary);
     if (argc >= 2) {
         ime.dict()->load(WenzhouneseDictionary::UserDict, argv[1],

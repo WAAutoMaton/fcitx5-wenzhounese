@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
  */
-#ifndef _LIBIME_WENZHOUNESE_LIBIME_WENZHOUNESE_WENZHOUNESEDECODER_P_H_
-#define _LIBIME_WENZHOUNESE_LIBIME_WENZHOUNESE_WENZHOUNESEDECODER_P_H_
+#ifndef _LIBIME_WENZHOUNESE_WENZHOUNESEDECODER_P_H_
+#define _LIBIME_WENZHOUNESE_WENZHOUNESEDECODER_P_H_
 
 #include "wenzhounesedecoder.h"
 #include <libime/core/lattice.h>
@@ -24,4 +24,4 @@ public:
 } // namespace wenzhounese
 } // namespace libime
 
-#endif // _LIBIME_WENZHOUNESE_LIBIME_WENZHOUNESE_WENZHOUNESEDECODER_P_H_
+#endif // _LIBIME_WENZHOUNESE_WENZHOUNESEDECODER_P_H_
