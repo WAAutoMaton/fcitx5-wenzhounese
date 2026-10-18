@@ -37,7 +37,10 @@ target_include_directories(IMEWenzhounese PUBLIC
 
 target_link_libraries(IMEWenzhounese PUBLIC Fcitx5::Utils Boost::boost LibIME::Core PRIVATE Boost::iostreams PkgConfig::ZSTD)
 
-install(TARGETS IMEWenzhounese EXPORT LibIMEWenzhouneseTargets LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT lib)
+install(TARGETS IMEWenzhounese EXPORT LibIMEWenzhouneseTargets
+    RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT lib
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT lib
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT Devel)
 install(FILES ${LIBIME_WENZHOUNESE_HDRS} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/LibIME/libime/wenzhounese" COMPONENT header)
 
 add_library(LibIME::Wenzhounese ALIAS IMEWenzhounese)
@@ -59,4 +62,3 @@ install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/LibIMEWenzhouneseConfig.cmake"
                "${CMAKE_CURRENT_BINARY_DIR}/LibIMEWenzhouneseConfigVersion.cmake"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/LibIMEWenzhounese"
         COMPONENT Devel)
-

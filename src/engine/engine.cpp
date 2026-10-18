@@ -56,6 +56,7 @@
 #include <ostream>
 #include <quickphrase_public.h>
 #include <string>
+#include <stdexcept>
 #include <string_view>
 #include <unordered_set>
 #include <utility>
@@ -351,11 +352,14 @@ void WenzhouneseEngine::updateUI(InputContext *inputContext) {
 WenzhouneseEngine::WenzhouneseEngine(Instance *instance)
     : instance_(instance),
       factory_([this](InputContext &) { return new WenzhouneseState(this); }) {
+    auto modelFile = libime::DefaultLanguageModelResolver::instance()
+                         .languageModelFileForLanguage("wenzhounese");
+    if (!modelFile) {
+        throw std::runtime_error("Cannot locate wenzhounese.lm");
+    }
     ime_ = std::make_unique<libime::wenzhounese::WenzhouneseIME>(
         std::make_unique<libime::wenzhounese::WenzhouneseDictionary>(),
-        std::make_unique<libime::UserLanguageModel>(
-            libime::DefaultLanguageModelResolver::instance()
-                .languageModelFileForLanguage("zh_HK")));
+        std::make_unique<libime::UserLanguageModel>(std::move(modelFile)));
 
     const auto &standardPath = StandardPaths::global();
     auto systemDictFile =
@@ -366,9 +370,13 @@ WenzhouneseEngine::WenzhouneseEngine(Instance *instance)
         ime_->dict()->load(libime::wenzhounese::WenzhouneseDictionary::SystemDict, in,
                            libime::wenzhounese::WenzhouneseDictFormat::Binary);
     } else {
+#ifdef _WIN32
+        throw std::runtime_error("Cannot locate libime/wenzhounese.dict");
+#else
         ime_->dict()->load(libime::wenzhounese::WenzhouneseDictionary::SystemDict,
                            LIBIME_WENZHOUNESE_INSTALL_PKGDATADIR "/wenzhounese.dict",
                            libime::wenzhounese::WenzhouneseDictFormat::Binary);
+#endif
     }
     prediction_.setUserLanguageModel(ime_->model());
 
