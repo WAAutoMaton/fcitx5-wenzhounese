@@ -55,8 +55,8 @@
 #include <memory>
 #include <ostream>
 #include <quickphrase_public.h>
-#include <string>
 #include <stdexcept>
+#include <string>
 #include <string_view>
 #include <unordered_set>
 #include <utility>
@@ -367,23 +367,25 @@ WenzhouneseEngine::WenzhouneseEngine(Instance *instance)
     if (systemDictFile.isValid()) {
         IFDStreamBuf buffer(systemDictFile.fd());
         std::istream in(&buffer);
-        ime_->dict()->load(libime::wenzhounese::WenzhouneseDictionary::SystemDict, in,
-                           libime::wenzhounese::WenzhouneseDictFormat::Binary);
+        ime_->dict()->load(
+            libime::wenzhounese::WenzhouneseDictionary::SystemDict, in,
+            libime::wenzhounese::WenzhouneseDictFormat::Binary);
     } else {
 #ifdef _WIN32
         throw std::runtime_error("Cannot locate libime/wenzhounese.dict");
 #else
-        ime_->dict()->load(libime::wenzhounese::WenzhouneseDictionary::SystemDict,
-                           LIBIME_WENZHOUNESE_INSTALL_PKGDATADIR "/wenzhounese.dict",
-                           libime::wenzhounese::WenzhouneseDictFormat::Binary);
+        ime_->dict()->load(
+            libime::wenzhounese::WenzhouneseDictionary::SystemDict,
+            LIBIME_WENZHOUNESE_INSTALL_PKGDATADIR "/wenzhounese.dict",
+            libime::wenzhounese::WenzhouneseDictFormat::Binary);
 #endif
     }
     prediction_.setUserLanguageModel(ime_->model());
 
     do {
         auto file =
-            standardPath.open(StandardPathsType::PkgData, "wenzhounese/user.dict",
-                              StandardPathsMode::User);
+            standardPath.open(StandardPathsType::PkgData,
+                              "wenzhounese/user.dict", StandardPathsMode::User);
 
         if (file.fd() < 0) {
             break;
@@ -392,16 +394,16 @@ WenzhouneseEngine::WenzhouneseEngine(Instance *instance)
         try {
             IFDStreamBuf buffer(file.fd());
             std::istream in(&buffer);
-            ime_->dict()->load(libime::wenzhounese::WenzhouneseDictionary::UserDict,
-                               in,
-                               libime::wenzhounese::WenzhouneseDictFormat::Binary);
+            ime_->dict()->load(
+                libime::wenzhounese::WenzhouneseDictionary::UserDict, in,
+                libime::wenzhounese::WenzhouneseDictFormat::Binary);
         } catch (const std::exception &) {
         }
     } while (0);
     do {
-        auto file =
-            standardPath.open(StandardPathsType::PkgData,
-                              "wenzhounese/user.history", StandardPathsMode::User);
+        auto file = standardPath.open(StandardPathsType::PkgData,
+                                      "wenzhounese/user.history",
+                                      StandardPathsMode::User);
 
         try {
             IFDStreamBuf buffer(file.fd());
@@ -450,7 +452,7 @@ void WenzhouneseEngine::reloadConfig() {
     ime_->setInnerSegment(*config_.inner);
 }
 void WenzhouneseEngine::activate(const fcitx::InputMethodEntry &,
-                              fcitx::InputContextEvent &event) {
+                                 fcitx::InputContextEvent &event) {
     auto *inputContext = event.inputContext();
     // Request full width.
     fullwidth();
@@ -467,7 +469,7 @@ void WenzhouneseEngine::activate(const fcitx::InputMethodEntry &,
 }
 
 void WenzhouneseEngine::deactivate(const fcitx::InputMethodEntry &entry,
-                                fcitx::InputContextEvent &event) {
+                                   fcitx::InputContextEvent &event) {
     auto *inputContext = event.inputContext();
     if (event.type() == EventType::InputContextSwitchInputMethod) {
         auto *state = inputContext->propertyFor(&factory_);
@@ -478,7 +480,8 @@ void WenzhouneseEngine::deactivate(const fcitx::InputMethodEntry &entry,
     reset(entry, event);
 }
 
-void WenzhouneseEngine::keyEvent(const InputMethodEntry &entry, KeyEvent &event) {
+void WenzhouneseEngine::keyEvent(const InputMethodEntry &entry,
+                                 KeyEvent &event) {
     FCITX_UNUSED(entry);
     PINYIN_DEBUG() << "Wenzhounese receive key: " << event.key() << " "
                    << event.isRelease();
@@ -722,7 +725,8 @@ void WenzhouneseEngine::keyEvent(const InputMethodEntry &entry, KeyEvent &event)
     }
 }
 
-void WenzhouneseEngine::reset(const InputMethodEntry &, InputContextEvent &event) {
+void WenzhouneseEngine::reset(const InputMethodEntry &,
+                              InputContextEvent &event) {
     auto *inputContext = event.inputContext();
     doReset(inputContext);
 }
@@ -753,8 +757,8 @@ void WenzhouneseEngine::save() {
                 return false;
             }
         });
-    standardPath.safeSave(StandardPathsType::PkgData, "wenzhounese/user.history",
-                          [this](int fd) {
+    standardPath.safeSave(StandardPathsType::PkgData,
+                          "wenzhounese/user.history", [this](int fd) {
                               OFDStreamBuf buffer(fd);
                               std::ostream out(&buffer);
                               try {

@@ -40,14 +40,16 @@ int main() {
         }
 
         auto fullWenzhounese = WenzhouneseEncoder::initialToString(initial) +
-                            WenzhouneseEncoder::finalToString(final);
+                               WenzhouneseEncoder::finalToString(final);
         // make sure valid item is unique
         auto result = seen.insert(wenzhounese);
         FCITX_ASSERT(result.second);
 
         int16_t encode =
-            ((static_cast<int16_t>(initial) - WenzhouneseEncoder::firstInitial) *
-             (WenzhouneseEncoder::lastFinal - WenzhouneseEncoder::firstFinal + 1)) +
+            ((static_cast<int16_t>(initial) -
+              WenzhouneseEncoder::firstInitial) *
+             (WenzhouneseEncoder::lastFinal - WenzhouneseEncoder::firstFinal +
+              1)) +
             (static_cast<int16_t>(final) - WenzhouneseEncoder::firstFinal);
         FCITX_ASSERT(WenzhouneseEncoder::isValidInitialFinal(initial, final))
             << " " << encode;

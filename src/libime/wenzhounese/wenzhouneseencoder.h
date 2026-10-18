@@ -44,14 +44,14 @@ enum class WenzhouneseInitial : char {
     H,
     HH,
     U,
-    //V,
+    // V,
     I,
     Y,
     Zero,
 };
 
 enum class WenzhouneseFinal : char {
-    Invalid = 0, 
+    Invalid = 0,
     A,
     AE,
     AI,
@@ -120,17 +120,19 @@ private:
     WenzhouneseFinal final_;
 };
 
-using MatchedWenzhouneseSyllables = std::vector<
-    std::pair<WenzhouneseInitial, std::vector<std::pair<WenzhouneseFinal, bool>>>>;
+using MatchedWenzhouneseSyllables =
+    std::vector<std::pair<WenzhouneseInitial,
+                          std::vector<std::pair<WenzhouneseFinal, bool>>>>;
 
 class LIBIMEWENZHOUNESE_EXPORT WenzhouneseEncoder {
 public:
     static SegmentGraph parseUserWenzhounese(std::string wenzhounese,
-                                          bool inner = true);
+                                             bool inner = true);
     static std::vector<char> encodeOneUserWenzhounese(std::string wenzhounese);
     static bool isValidUserWenzhounese(const char *data, size_t size);
 
-    static std::vector<char> encodeFullWenzhounese(std::string_view wenzhounese);
+    static std::vector<char>
+    encodeFullWenzhounese(std::string_view wenzhounese);
 
     static std::string decodeFullWenzhounese(const char *data, size_t size);
     static std::string decodeFullWenzhounese(std::string_view data) {
@@ -164,4 +166,3 @@ public:
 } // namespace wenzhounese
 } // namespace libime
 #endif // _LIBIME_WENZHOUNESE_WENZHOUNESEENCODER_H_
-

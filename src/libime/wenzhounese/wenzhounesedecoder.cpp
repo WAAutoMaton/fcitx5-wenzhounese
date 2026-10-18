@@ -38,14 +38,15 @@ LatticeNode *WenzhouneseDecoder::createLatticeNodeImpl(
     if (model->isUnknown(idx, word)) {
         // we don't really care about a lot of unknown single character
         // which is not used for candidates
-        if ((wenzhouneseData && wenzhouneseData->encodedWenzhounese_.size() == 2) &&
+        if ((wenzhouneseData &&
+             wenzhouneseData->encodedWenzhounese_.size() == 2) &&
             path.front() != &graph.start() && !onlyPath) {
             return nullptr;
         }
     }
 
     return new WenzhouneseLatticeNode(word, idx, std::move(path), state, cost,
-                                   std::move(wenzhouneseData));
+                                      std::move(wenzhouneseData));
 }
 
 } // namespace wenzhounese

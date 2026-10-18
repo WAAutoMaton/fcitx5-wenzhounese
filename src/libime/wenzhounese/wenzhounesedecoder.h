@@ -19,8 +19,9 @@ class WenzhouneseLatticeNodePrivate;
 class LIBIMEWENZHOUNESE_EXPORT WenzhouneseLatticeNode : public LatticeNode {
 public:
     WenzhouneseLatticeNode(std::string_view word, WordIndex idx,
-                        SegmentGraphPath path, const State &state, float cost,
-                        std::unique_ptr<WenzhouneseLatticeNodePrivate> data);
+                           SegmentGraphPath path, const State &state,
+                           float cost,
+                           std::unique_ptr<WenzhouneseLatticeNodePrivate> data);
     virtual ~WenzhouneseLatticeNode();
 
     const std::string &encodedWenzhounese() const;
@@ -32,7 +33,7 @@ private:
 class LIBIMEWENZHOUNESE_EXPORT WenzhouneseDecoder : public Decoder {
 public:
     WenzhouneseDecoder(const WenzhouneseDictionary *dict,
-                    const LanguageModelBase *model)
+                       const LanguageModelBase *model)
         : Decoder(dict, model) {}
 
 protected:

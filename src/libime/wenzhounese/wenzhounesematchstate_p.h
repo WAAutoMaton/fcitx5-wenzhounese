@@ -40,7 +40,7 @@ struct MatchedWenzhouneseTrieNodes {
 // adjustment score.
 struct WenzhouneseMatchResult {
     WenzhouneseMatchResult(std::string_view s, float value,
-                        std::string_view encodedWenzhounese)
+                           std::string_view encodedWenzhounese)
         : word_(s, InvalidWordIndex), value_(value),
           encodedWenzhounese_(encodedWenzhounese) {}
     WordNode word_;
@@ -52,12 +52,12 @@ struct WenzhouneseMatchResult {
 // reuslt.
 struct MatchedWenzhounesePath {
     MatchedWenzhounesePath(const WenzhouneseTrie *trie, size_t size,
-                        SegmentGraphPath path)
+                           SegmentGraphPath path)
         : result_(std::make_shared<MatchedWenzhouneseTrieNodes>(trie, size)),
           path_(std::move(path)) {}
 
     MatchedWenzhounesePath(std::shared_ptr<MatchedWenzhouneseTrieNodes> result,
-                        SegmentGraphPath path)
+                           SegmentGraphPath path)
         : result_(result), path_(std::move(path)) {}
 
     FCITX_INLINE_DEFINE_DEFAULT_DTOR_COPY_AND_MOVE(MatchedWenzhounesePath)
@@ -112,7 +112,8 @@ typedef std::unordered_map<
 
 class WenzhouneseMatchStatePrivate {
 public:
-    WenzhouneseMatchStatePrivate(WenzhouneseContext *context) : context_(context) {}
+    WenzhouneseMatchStatePrivate(WenzhouneseContext *context)
+        : context_(context) {}
 
     WenzhouneseContext *context_;
     NodeToMatchedWenzhounesePathsMap matchedPaths_;

@@ -6,13 +6,13 @@
  */
 
 #include "wenzhounesedictionary.h"
-#include "wenzhounesedecoder_p.h"
-#include "wenzhouneseencoder.h"
-#include "wenzhounesematchstate_p.h"
 #include "libime/core/datrie.h"
 #include "libime/core/lattice.h"
 #include "libime/core/lrucache.h"
 #include "utils_p.h"
+#include "wenzhounesedecoder_p.h"
+#include "wenzhouneseencoder.h"
+#include "wenzhounesematchstate_p.h"
 #include "zstdfilter.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/iostreams/filtering_streambuf.hpp>
@@ -40,7 +40,8 @@ static constexpr uint32_t wenzhouneseBinaryFormatMagic = 0x000fc733;
 static constexpr uint32_t wenzhouneseBinaryFormatVersion = 0x2;
 
 struct WenzhouneseSegmentGraphPathHasher {
-    WenzhouneseSegmentGraphPathHasher(const SegmentGraph &graph) : graph_(graph) {}
+    WenzhouneseSegmentGraphPathHasher(const SegmentGraph &graph)
+        : graph_(graph) {}
 
     // Generate a "|" separated raw wenzhounese string from given path, skip all
     // separator.
@@ -273,11 +274,12 @@ traverseAlongPathOneStepBySyllables(const MatchedWenzhounesePath &path,
                      test <= WenzhouneseEncoder::lastFinal; test++) {
                     auto curFinal = static_cast<WenzhouneseFinal>(test);
                     if (WenzhouneseEncoder::isValidInitialFinal(syl.first,
-                                                             curFinal)) {
-                        updateNext(
-                            test,
-                            (curFinal == WenzhouneseFinal::Zero ? 0 : fuzzyFactor),
-                            pos);
+                                                                curFinal)) {
+                        updateNext(test,
+                                   (curFinal == WenzhouneseFinal::Zero
+                                        ? 0
+                                        : fuzzyFactor),
+                                   pos);
                     }
                 }
             }
@@ -326,8 +328,8 @@ bool WenzhouneseDictionaryPrivate::matchWordsForOnePath(
         auto result =
             matchCache.find(path.path_, context.hasher_, context.hasher_);
         if (!result) {
-            result =
-                matchCache.insert(context.hasher_.pathToWenzhouneses(path.path_));
+            result = matchCache.insert(
+                context.hasher_.pathToWenzhouneses(path.path_));
             result->clear();
 
             auto &items = *result;
@@ -351,9 +353,9 @@ bool WenzhouneseDictionaryPrivate::matchWordsForOnePath(
                                 &prevNode](std::string_view encodedWenzhounese,
                                            std::string_view hanzi, float cost) {
             WordNode word(hanzi, InvalidWordIndex);
-            context.callback_(
-                path.path_, word, cost,
-                std::make_unique<WenzhouneseLatticeNodePrivate>(encodedWenzhounese));
+            context.callback_(path.path_, word, cost,
+                              std::make_unique<WenzhouneseLatticeNodePrivate>(
+                                  encodedWenzhounese));
             if (path.size() == 1 &&
                 path.path_[path.path_.size() - 2] == &prevNode) {
                 matched = true;
@@ -401,7 +403,8 @@ void WenzhouneseDictionaryPrivate::findMatchesBetween(
     }
 
     const auto syls = WenzhouneseEncoder::stringToSyllables(wenzhounese);
-    const MatchedWenzhounesePaths &prevMatchedPaths = matchedPathsMap[&prevNode];
+    const MatchedWenzhounesePaths &prevMatchedPaths =
+        matchedPathsMap[&prevNode];
     MatchedWenzhounesePaths newPaths;
     for (auto &path : prevMatchedPaths) {
         // Make a copy of path so we can modify based on it.
@@ -416,8 +419,8 @@ void WenzhouneseDictionaryPrivate::findMatchesBetween(
             if (!p) {
                 result = std::make_shared<MatchedWenzhouneseTrieNodes>(
                     path.trie(), path.size() + 1);
-                nodeCache.insert(context.hasher_.pathToWenzhouneses(segmentPath),
-                                 result);
+                nodeCache.insert(
+                    context.hasher_.pathToWenzhouneses(segmentPath), result);
                 result->triePositions_ =
                     traverseAlongPathOneStepBySyllables(path, syls);
             } else {
@@ -488,10 +491,11 @@ void WenzhouneseDictionary::matchPrefixImpl(
 
     NodeToMatchedWenzhounesePathsMap localMatchedPaths;
     WenzhouneseMatchContext context =
-        helper
-            ? WenzhouneseMatchContext{graph, callback, ignore,
-                                   static_cast<WenzhouneseMatchState *>(helper)}
-            : WenzhouneseMatchContext{graph, callback, ignore, localMatchedPaths};
+        helper ? WenzhouneseMatchContext{graph, callback, ignore,
+                                         static_cast<WenzhouneseMatchState *>(
+                                             helper)}
+               : WenzhouneseMatchContext{graph, callback, ignore,
+                                         localMatchedPaths};
 
     // A queue to make sure that node with smaller index will be visted first
     // because we want to make sure every predecessor node are visited before
@@ -518,13 +522,14 @@ void WenzhouneseDictionary::matchPrefixImpl(
     }
 }
 
-void WenzhouneseDictionary::matchWords(const char *data, size_t size,
-                                    WenzhouneseMatchCallback callback) const {
+void WenzhouneseDictionary::matchWords(
+    const char *data, size_t size, WenzhouneseMatchCallback callback) const {
     if (!WenzhouneseEncoder::isValidUserWenzhounese(data, size)) {
         return;
     }
 
-    std::list<std::pair<const WenzhouneseTrie *, WenzhouneseTrie::position_type>>
+    std::list<
+        std::pair<const WenzhouneseTrie *, WenzhouneseTrie::position_type>>
         nodes;
     for (size_t i = 0; i < dictSize(); i++) {
         auto &trie = *this->trie(i);
@@ -574,8 +579,8 @@ void WenzhouneseDictionary::matchWords(const char *data, size_t size,
 
     for (auto &node : nodes) {
         node.first->foreach(
-            [&node, &callback, size](WenzhouneseTrie::value_type value, size_t len,
-                                     uint64_t pos) {
+            [&node, &callback, size](WenzhouneseTrie::value_type value,
+                                     size_t len, uint64_t pos) {
                 std::string s;
                 node.first->suffix(s, len + size + 1, pos);
 
@@ -595,7 +600,7 @@ WenzhouneseDictionary::WenzhouneseDictionary()
 WenzhouneseDictionary::~WenzhouneseDictionary() {}
 
 void WenzhouneseDictionary::load(size_t idx, const char *filename,
-                              WenzhouneseDictFormat format) {
+                                 WenzhouneseDictFormat format) {
     std::ifstream in(filename, std::ios::in | std::ios::binary);
     if (!in) {
         throw std::ios_base::failure("io fail");
@@ -604,7 +609,7 @@ void WenzhouneseDictionary::load(size_t idx, const char *filename,
 }
 
 void WenzhouneseDictionary::load(size_t idx, std::istream &in,
-                              WenzhouneseDictFormat format) {
+                                 WenzhouneseDictFormat format) {
     switch (format) {
     case WenzhouneseDictFormat::Text:
         loadText(idx, in);
@@ -635,7 +640,8 @@ void WenzhouneseDictionary::loadText(size_t idx, std::istream &in) {
             const std::string &hanzi = tokens[0];
             std::string_view wenzhounese = tokens[1];
             float prob = std::stof(tokens[2]);
-            auto result = WenzhouneseEncoder::encodeFullWenzhounese(wenzhounese);
+            auto result =
+                WenzhouneseEncoder::encodeFullWenzhounese(wenzhounese);
             result.push_back(wenzhouneseHanziSep);
             result.insert(result.end(), hanzi.begin(), hanzi.end());
             trie.set(result.data(), result.size(), prob);
@@ -679,7 +685,7 @@ void WenzhouneseDictionary::loadBinary(size_t idx, std::istream &in) {
 }
 
 void WenzhouneseDictionary::save(size_t idx, const char *filename,
-                              WenzhouneseDictFormat format) {
+                                 WenzhouneseDictFormat format) {
     std::ofstream fout(filename, std::ios::out | std::ios::binary);
     if (!fout) {
         throw std::ios_base::failure("io fail");
@@ -688,7 +694,7 @@ void WenzhouneseDictionary::save(size_t idx, const char *filename,
 }
 
 void WenzhouneseDictionary::save(size_t idx, std::ostream &out,
-                              WenzhouneseDictFormat format) {
+                                 WenzhouneseDictFormat format) {
     switch (format) {
     case WenzhouneseDictFormat::Text:
         saveText(idx, out);
@@ -731,8 +737,9 @@ void WenzhouneseDictionary::saveText(size_t idx, std::ostream &out) {
     out.copyfmt(state);
 }
 
-void WenzhouneseDictionary::addWord(size_t idx, std::string_view fullWenzhounese,
-                                 std::string_view hanzi, float cost) {
+void WenzhouneseDictionary::addWord(size_t idx,
+                                    std::string_view fullWenzhounese,
+                                    std::string_view hanzi, float cost) {
     auto result = WenzhouneseEncoder::encodeFullWenzhounese(fullWenzhounese);
     result.push_back(wenzhouneseHanziSep);
     result.insert(result.end(), hanzi.begin(), hanzi.end());

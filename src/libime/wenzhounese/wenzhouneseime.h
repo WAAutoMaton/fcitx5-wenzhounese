@@ -25,10 +25,11 @@ class WenzhouneseDecoder;
 class WenzhouneseDictionary;
 
 /// \brief Provides shared data for WenzhouneseContext.
-class LIBIMEWENZHOUNESE_EXPORT WenzhouneseIME : public fcitx::ConnectableObject {
+class LIBIMEWENZHOUNESE_EXPORT WenzhouneseIME
+    : public fcitx::ConnectableObject {
 public:
     WenzhouneseIME(std::unique_ptr<WenzhouneseDictionary> dict,
-                std::unique_ptr<UserLanguageModel> model);
+                   std::unique_ptr<UserLanguageModel> model);
     virtual ~WenzhouneseIME();
 
     bool innerSegment() const;

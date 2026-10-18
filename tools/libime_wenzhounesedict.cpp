@@ -43,7 +43,8 @@ int main(int argc, char *argv[]) {
     WenzhouneseDictionary dict;
 
     dict.load(WenzhouneseDictionary::SystemDict, argv[optind],
-              dump ? WenzhouneseDictFormat::Binary : WenzhouneseDictFormat::Text);
+              dump ? WenzhouneseDictFormat::Binary
+                   : WenzhouneseDictFormat::Text);
 
     std::ofstream fout;
     std::ostream *out;
@@ -54,6 +55,7 @@ int main(int argc, char *argv[]) {
         out = &fout;
     }
     dict.save(WenzhouneseDictionary::SystemDict, *out,
-              dump ? WenzhouneseDictFormat::Text : WenzhouneseDictFormat::Binary);
+              dump ? WenzhouneseDictFormat::Text
+                   : WenzhouneseDictFormat::Binary);
     return 0;
 }

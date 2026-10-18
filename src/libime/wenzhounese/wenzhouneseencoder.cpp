@@ -41,20 +41,20 @@ static const auto initialMap = makeBimap<WenzhouneseInitial, std::string>({
 });
 
 static const auto finalMap = makeBimap<WenzhouneseFinal, std::string>({
-    {WenzhouneseFinal::A, "a"}, {WenzhouneseFinal::AE, "ae"},
-    {WenzhouneseFinal::AI, "ai"}, {WenzhouneseFinal::ANG, "ang"},
-    {WenzhouneseFinal::AU, "au"}, {WenzhouneseFinal::E, "e"},
-    {WenzhouneseFinal::EE, "ee"}, {WenzhouneseFinal::EI, "ei"},
-    {WenzhouneseFinal::ENG, "eng"}, {WenzhouneseFinal::EU, "eu"},
-    {WenzhouneseFinal::I, "i"}, {WenzhouneseFinal::IA, "ia"},
-    {WenzhouneseFinal::IAE, "iae"}, {WenzhouneseFinal::IAI, "iai"},
+    {WenzhouneseFinal::A, "a"},       {WenzhouneseFinal::AE, "ae"},
+    {WenzhouneseFinal::AI, "ai"},     {WenzhouneseFinal::ANG, "ang"},
+    {WenzhouneseFinal::AU, "au"},     {WenzhouneseFinal::E, "e"},
+    {WenzhouneseFinal::EE, "ee"},     {WenzhouneseFinal::EI, "ei"},
+    {WenzhouneseFinal::ENG, "eng"},   {WenzhouneseFinal::EU, "eu"},
+    {WenzhouneseFinal::I, "i"},       {WenzhouneseFinal::IA, "ia"},
+    {WenzhouneseFinal::IAE, "iae"},   {WenzhouneseFinal::IAI, "iai"},
     {WenzhouneseFinal::IANG, "iang"}, {WenzhouneseFinal::IAU, "iau"},
-    {WenzhouneseFinal::IEU, "ieu"}, {WenzhouneseFinal::II, "ii"},
+    {WenzhouneseFinal::IEU, "ieu"},   {WenzhouneseFinal::II, "ii"},
     {WenzhouneseFinal::IONG, "iong"}, {WenzhouneseFinal::O, "o"},
-    {WenzhouneseFinal::OE, "oe"}, {WenzhouneseFinal::OEV, "oev"},
-    {WenzhouneseFinal::ONG, "ong"}, {WenzhouneseFinal::U, "u"},
-    {WenzhouneseFinal::UIO, "uio"}, {WenzhouneseFinal::V, "v"},
-    {WenzhouneseFinal::VIO, "vio"}, {WenzhouneseFinal::VO, "vo"},
+    {WenzhouneseFinal::OE, "oe"},     {WenzhouneseFinal::OEV, "oev"},
+    {WenzhouneseFinal::ONG, "ong"},   {WenzhouneseFinal::U, "u"},
+    {WenzhouneseFinal::UIO, "uio"},   {WenzhouneseFinal::V, "v"},
+    {WenzhouneseFinal::VIO, "vio"},   {WenzhouneseFinal::VO, "vo"},
     {WenzhouneseFinal::Zero, ""},
 });
 
@@ -93,8 +93,9 @@ std::string WenzhouneseSyllable::toString() const {
            WenzhouneseEncoder::finalToString(final_);
 }
 
-SegmentGraph WenzhouneseEncoder::parseUserWenzhounese(std::string userWenzhounese,
-                                                bool inner) {
+SegmentGraph
+WenzhouneseEncoder::parseUserWenzhounese(std::string userWenzhounese,
+                                         bool inner) {
     SegmentGraph result(std::move(userWenzhounese));
     const auto &wenzhounese = result.data();
     auto end = wenzhounese.end();
@@ -134,13 +135,15 @@ SegmentGraph WenzhouneseEncoder::parseUserWenzhounese(std::string userWenzhounes
             // wenzhounese may end with aegikmnoptu
             // and may start with abcdefghjklmnopstuwz.
             // the intersection is aegkmnoptu.
-            // also, make sure current wenzhounese does not end with a separator.
+            // also, make sure current wenzhounese does not end with a
+            // separator.
             auto &map = getWenzhouneseMap();
             std::array<size_t, 2> nextSize;
             size_t nNextSize = 0;
             if (str.size() > 1 && top + str.size() < wenzhounese.size() &&
                 wenzhounese[top + str.size()] != '\'' &&
-                                (str.back() == 'g' || str.back() == 'i' || str.back() == 'u' || str.back() == 'v') &&
+                (str.back() == 'g' || str.back() == 'i' || str.back() == 'u' ||
+                 str.back() == 'v') &&
                 map.find(str.substr(0, str.size() - 1)) != map.end()) {
                 // str[0:-1] is also a full wenzhounese, check next wenzhounese
                 auto nextMatch = longestMatch(iter + str.size(), end);
@@ -182,7 +185,8 @@ SegmentGraph WenzhouneseEncoder::parseUserWenzhounese(std::string userWenzhounes
     return result;
 }
 
-std::vector<char> WenzhouneseEncoder::encodeOneUserWenzhounese(std::string wenzhounese) {
+std::vector<char>
+WenzhouneseEncoder::encodeOneUserWenzhounese(std::string wenzhounese) {
     if (wenzhounese.empty()) {
         return {};
     }
@@ -219,7 +223,8 @@ bool WenzhouneseEncoder::isValidUserWenzhounese(const char *data, size_t size) {
     return true;
 }
 
-std::string WenzhouneseEncoder::decodeFullWenzhounese(const char *data, size_t size) {
+std::string WenzhouneseEncoder::decodeFullWenzhounese(const char *data,
+                                                      size_t size) {
     if (size % 2 != 0) {
         throw std::invalid_argument("invalid wenzhounese key");
     }
@@ -234,12 +239,14 @@ std::string WenzhouneseEncoder::decodeFullWenzhounese(const char *data, size_t s
     return result;
 }
 
-const std::string &WenzhouneseEncoder::initialToString(WenzhouneseInitial initial) {
+const std::string &
+WenzhouneseEncoder::initialToString(WenzhouneseInitial initial) {
     const static std::vector<std::string> s = []() {
         std::vector<std::string> s;
         s.resize(lastInitial - firstInitial + 1);
         for (char c = firstInitial; c <= lastInitial; c++) {
-            auto iter = initialMap.left.find(static_cast<WenzhouneseInitial>(c));
+            auto iter =
+                initialMap.left.find(static_cast<WenzhouneseInitial>(c));
             s[c - firstInitial] = iter->second;
         }
         return s;
@@ -285,12 +292,14 @@ WenzhouneseFinal WenzhouneseEncoder::stringToFinal(const std::string &str) {
 }
 
 bool WenzhouneseEncoder::isValidInitialFinal(WenzhouneseInitial initial,
-                                          WenzhouneseFinal final) {
+                                             WenzhouneseFinal final) {
     if (initial != WenzhouneseInitial::Invalid &&
         final != WenzhouneseFinal::Invalid) {
         int16_t encode =
-            ((static_cast<int16_t>(initial) - WenzhouneseEncoder::firstInitial) *
-             (WenzhouneseEncoder::lastFinal - WenzhouneseEncoder::firstFinal + 1)) +
+            ((static_cast<int16_t>(initial) -
+              WenzhouneseEncoder::firstInitial) *
+             (WenzhouneseEncoder::lastFinal - WenzhouneseEncoder::firstFinal +
+              1)) +
             (static_cast<int16_t>(final) - WenzhouneseEncoder::firstFinal);
         const auto &a = getEncodedInitialFinal();
         return encode < static_cast<int>(a.size()) && a[encode];
@@ -298,11 +307,13 @@ bool WenzhouneseEncoder::isValidInitialFinal(WenzhouneseInitial initial,
     return false;
 }
 
-static void getFuzzy(
-    std::vector<std::pair<WenzhouneseInitial,
-                          std::vector<std::pair<WenzhouneseFinal, bool>>>> &syls,
-    WenzhouneseSyllable syl) {
-    WenzhouneseInitial initials[2] = {syl.initial(), WenzhouneseInitial::Invalid};
+static void
+getFuzzy(std::vector<std::pair<WenzhouneseInitial,
+                               std::vector<std::pair<WenzhouneseFinal, bool>>>>
+             &syls,
+         WenzhouneseSyllable syl) {
+    WenzhouneseInitial initials[2] = {syl.initial(),
+                                      WenzhouneseInitial::Invalid};
     WenzhouneseFinal finals[2] = {syl.final(), WenzhouneseFinal::Invalid};
     int initialSize = 1;
     int finalSize = 1;
@@ -336,8 +347,8 @@ static void getFuzzy(
 
 MatchedWenzhouneseSyllables
 WenzhouneseEncoder::stringToSyllables(std::string_view wenzhounese) {
-    std::vector<
-        std::pair<WenzhouneseInitial, std::vector<std::pair<WenzhouneseFinal, bool>>>>
+    std::vector<std::pair<WenzhouneseInitial,
+                          std::vector<std::pair<WenzhouneseFinal, bool>>>>
         result;
     auto &map = getWenzhouneseMap();
     // we only want {M,N,R}/Invalid instead of {M,N,R}/Zero, so we could get

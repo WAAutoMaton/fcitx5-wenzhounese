@@ -5,12 +5,12 @@
  *
  */
 #include "wenzhounesecontext.h"
+#include "libime/core/historybigram.h"
+#include "libime/core/userlanguagemodel.h"
 #include "wenzhounesedecoder.h"
 #include "wenzhouneseencoder.h"
 #include "wenzhouneseime.h"
 #include "wenzhounesematchstate.h"
-#include "libime/core/historybigram.h"
-#include "libime/core/userlanguagemodel.h"
 #include <algorithm>
 #include <fcitx-utils/log.h>
 #include <iostream>
@@ -162,7 +162,8 @@ void WenzhouneseContext::select(size_t idx) {
         selection.emplace_back(
             offset + p->to()->index(),
             WordNode{p->word(), d->ime_->model()->index(p->word())},
-            static_cast<const WenzhouneseLatticeNode *>(p)->encodedWenzhounese());
+            static_cast<const WenzhouneseLatticeNode *>(p)
+                ->encodedWenzhounese());
     }
     // add some special code for handling separator at the end
     auto remain = std::string_view(userInput()).substr(selectedLength());
@@ -419,8 +420,8 @@ std::string WenzhouneseContext::selectedFullWenzhounese() const {
                 if (!wenzhounese.empty()) {
                     wenzhounese.push_back('\'');
                 }
-                wenzhounese +=
-                    WenzhouneseEncoder::decodeFullWenzhounese(item.encodedWenzhounese_);
+                wenzhounese += WenzhouneseEncoder::decodeFullWenzhounese(
+                    item.encodedWenzhounese_);
             }
         }
     }
@@ -436,7 +437,8 @@ std::string WenzhouneseContext::candidateFullWenzhounese(size_t idx) const {
                 wenzhounese.push_back('\'');
             }
             wenzhounese += WenzhouneseEncoder::decodeFullWenzhounese(
-                static_cast<const WenzhouneseLatticeNode *>(p)->encodedWenzhounese());
+                static_cast<const WenzhouneseLatticeNode *>(p)
+                    ->encodedWenzhounese());
         }
     }
     return wenzhounese;

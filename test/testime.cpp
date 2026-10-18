@@ -28,8 +28,8 @@ using namespace libime::wenzhounese;
 int main(int argc, char *argv[]) {
     fcitx::Log::setLogRule("libime=5");
     WenzhouneseIME ime(std::make_unique<WenzhouneseDictionary>(),
-                    std::make_unique<UserLanguageModel>(LIBIME_BINARY_DIR
-                                                        "/data/zh_HK.lm"));
+                       std::make_unique<UserLanguageModel>(LIBIME_BINARY_DIR
+                                                           "/data/zh_HK.lm"));
     ime.setNBest(2);
     ime.dict()->load(WenzhouneseDictionary::SystemDict,
                      LIBIME_BINARY_DIR "/data/wenzhounese.dict",
@@ -81,12 +81,14 @@ int main(int argc, char *argv[]) {
         for (auto &candidate : c.candidates()) {
             std::cout << (count % 10) << ": ";
             for (auto node : candidate.sentence()) {
-                auto &wenzhounese = static_cast<const WenzhouneseLatticeNode *>(node)
-                                     ->encodedWenzhounese();
+                auto &wenzhounese =
+                    static_cast<const WenzhouneseLatticeNode *>(node)
+                        ->encodedWenzhounese();
                 std::cout << node->word();
                 if (!wenzhounese.empty()) {
                     std::cout << " "
-                              << WenzhouneseEncoder::decodeFullWenzhounese(wenzhounese);
+                              << WenzhouneseEncoder::decodeFullWenzhounese(
+                                     wenzhounese);
                 }
             }
             std::cout << " " << candidate.score() << std::endl;

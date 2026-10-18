@@ -20,8 +20,8 @@
 using namespace libime;
 using namespace libime::wenzhounese;
 
-void testTime(WenzhouneseDictionary &, Decoder &decoder, const char *wenzhounese,
-              int nbest = 1) {
+void testTime(WenzhouneseDictionary &, Decoder &decoder,
+              const char *wenzhounese, int nbest = 1) {
     auto graph = WenzhouneseEncoder::parseUserWenzhounese(wenzhounese, true);
     Lattice lattice;
     decoder.decode(lattice, graph, nbest, decoder.model()->nullState(),

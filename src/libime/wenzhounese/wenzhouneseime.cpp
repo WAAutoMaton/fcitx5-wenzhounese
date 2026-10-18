@@ -6,19 +6,21 @@
  */
 
 #include "wenzhouneseime.h"
-#include "wenzhounesedecoder.h"
 #include "libime/core/userlanguagemodel.h"
+#include "wenzhounesedecoder.h"
 
 namespace libime {
 namespace wenzhounese {
 
 class WenzhouneseIMEPrivate : fcitx::QPtrHolder<WenzhouneseIME> {
 public:
-    WenzhouneseIMEPrivate(WenzhouneseIME *q, std::unique_ptr<WenzhouneseDictionary> dict,
-                       std::unique_ptr<UserLanguageModel> model)
+    WenzhouneseIMEPrivate(WenzhouneseIME *q,
+                          std::unique_ptr<WenzhouneseDictionary> dict,
+                          std::unique_ptr<UserLanguageModel> model)
         : fcitx::QPtrHolder<WenzhouneseIME>(q), dict_(std::move(dict)),
-          model_(std::move(model)), decoder_(std::make_unique<WenzhouneseDecoder>(
-                                        dict_.get(), model_.get())) {}
+          model_(std::move(model)),
+          decoder_(std::make_unique<WenzhouneseDecoder>(dict_.get(),
+                                                        model_.get())) {}
 
     FCITX_DEFINE_SIGNAL_PRIVATE(WenzhouneseIME, optionChanged);
 
@@ -34,9 +36,9 @@ public:
 };
 
 WenzhouneseIME::WenzhouneseIME(std::unique_ptr<WenzhouneseDictionary> dict,
-                         std::unique_ptr<UserLanguageModel> model)
+                               std::unique_ptr<UserLanguageModel> model)
     : d_ptr(std::make_unique<WenzhouneseIMEPrivate>(this, std::move(dict),
-                                                 std::move(model))) {}
+                                                    std::move(model))) {}
 
 WenzhouneseIME::~WenzhouneseIME() {}
 

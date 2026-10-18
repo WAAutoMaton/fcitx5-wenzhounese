@@ -27,9 +27,9 @@ struct WenzhouneseHash {
 class WenzhouneseEntry {
 public:
     WenzhouneseEntry(const char *wenzhounese, WenzhouneseInitial initial,
-                  WenzhouneseFinal final, bool fuzzy = false)
-        : wenzhounese_(wenzhounese), initial_(initial), final_(final), fuzzy_(fuzzy) {
-    }
+                     WenzhouneseFinal final, bool fuzzy = false)
+        : wenzhounese_(wenzhounese), initial_(initial), final_(final),
+          fuzzy_(fuzzy) {}
 
     std::string_view wenzhouneseView() const { return wenzhounese_; }
     const std::string &wenzhounese() const { return wenzhounese_; }
