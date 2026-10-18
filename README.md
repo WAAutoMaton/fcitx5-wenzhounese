@@ -61,13 +61,13 @@ cmake --build build
 #### 安装与启用
 
 1. 在输入法指示器菜单中选择 `关闭服务`。
-2. 将 `build/windows/package` 中的 `bin`、`lib`、`share` 合并到 Core 安装目录下的 `plugins`，或 `%LOCALAPPDATA%/Fcitx5/plugins`，保留目录结构。多个插件共用这一目录树，无需再创建 `plugins/wenzhounese` 子目录。
+2. 将 `build/windows/package` 中的 `bin`、`lib`、`share` 一起放入 Core 安装目录下的 `plugins/wenzhounese`，或 `%LOCALAPPDATA%/Fcitx5/plugins/wenzhounese`，保留目录结构。每个插件发布包使用独立目录，需要支持独立目录发现的新版 Core。
 3. 选择 `重启服务`，在 Settings 的输入法列表中添加温州话，然后使用 `Ctrl+Space` 或指示器切换。
 
 主要运行时文件如下；标点依赖由宿主的 chinese-addons 提供：
 
 ```text
-plugins/
+plugins/wenzhounese/
   bin/libIMEWenzhounese.dll
   lib/fcitx5/libwenzhounese.dll
   lib/libime/wenzhounese.lm
@@ -78,7 +78,7 @@ plugins/
   share/locale/<语言>/LC_MESSAGES/fcitx5-wenzhounese.mo
 ```
 
-更新或移除插件前同样先关闭服务，完成后重启。移除时仅删除本插件拥有的文件，保留其他插件的数据。详细的宿主搜索规则及通用验证工具见 Windows 主仓库的 `docs/windows-plugins.md`。
+更新或移除插件前同样先关闭服务，完成后重启。独立布局可替换或删除整个 `plugins/wenzhounese` 目录，用户配置和词库仍保存在原有用户数据目录。旧的共用布局仍兼容，但迁移时需要手动移除旧位置中属于温州话插件的文件，避免保留两份副本；不要删除其他插件的文件。详细的宿主搜索规则及通用验证工具见 Windows 主仓库的 `docs/windows-plugins.md`。
 
 语言模型现在使用独立的 `wenzhounese.lm` / `wenzhounese.lm.predict` 文件名；升级时请同时安装新引擎和模型。
 
@@ -90,6 +90,12 @@ plugins/
 $sdk = (Resolve-Path ../fcitx5-windows/build/all/prefix).Path.Replace('\', '/')
 $plugin = (Resolve-Path ./build/windows/package).Path.Replace('\', '/')
 & "$sdk/bin/addon_probe.exe" "$sdk" "$plugin" wenzhounese nei
+```
+
+验证自动发现时，将包安装到隔离 Core 树的 `plugins/wenzhounese`，再运行：
+
+```powershell
+& "$sdk/bin/addon_probe.exe" "$sdk" --default wenzhounese nei
 ```
 
 该检查覆盖输入法发现、DLL 加载、配置读取和候选提交，不启动 Pipe 服务或注册 TSF；真实 Windows 应用中的 TSF 输入仍需单独验收。

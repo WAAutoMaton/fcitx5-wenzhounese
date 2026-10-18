@@ -65,7 +65,7 @@ try {
         if (!(Test-Path -LiteralPath "$Prefix/$file" -PathType Leaf)) { throw "Missing plugin output: $file" }
     }
     Write-Output "Wenzhounese plugin ready: $Prefix"
-    Write-Output 'Copy bin, lib and share into a plugin prefix, then restart Core and enable Wenzhounese in Settings.'
+    Write-Output 'Copy bin, lib and share into plugins/wenzhounese under Core or %LOCALAPPDATA%/Fcitx5, then restart Core and enable Wenzhounese in Settings.'
 } finally {
     $env:PATH = $oldPath
     $env:MSYS2_ROOT = $oldRoot
