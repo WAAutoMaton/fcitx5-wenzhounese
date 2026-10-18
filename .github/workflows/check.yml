@@ -175,7 +175,7 @@ jobs:
         run: |
           pacman -Syu --noconfirm git clang diffutils
           git config --global --add safe.directory $GITHUB_WORKSPACE
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: fcitx/github-actions@clang-format
   check:
     name: Build and verify Linux
@@ -202,6 +202,8 @@ jobs:
       CXX: ${{ matrix.cxx_compiler }}
       CMAKE_PREFIX_PATH: /opt/fcitx
       LD_LIBRARY_PATH: /opt/fcitx/lib
+      # Overlay databases do not support the manual C++ build below.
+      CODEQL_ACTION_OVERLAY_ANALYSIS: 'false'
     steps:
       - name: Install dependencies
         run: |
@@ -211,7 +213,7 @@ jobs:
           repository: fcitx/fcitx5
           path: fcitx5
       - name: Cache fcitx5 data files
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: 'fcitx5/**/*.tar.*'
           key: ${{ runner.os }}-${{ hashFiles('fcitx5/src/modules/spell/CMakeLists.txt')
@@ -229,7 +231,7 @@ jobs:
           path: libime
           submodules: true
       - name: Cache libime data files
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: 'libime/**/*.tar.*'
           key: ${{ runner.os }}-${{ hashFiles('libime/data/CMakeLists.txt') }}
@@ -275,6 +277,7 @@ jobs:
         if: matrix.compiler == 'gcc'
         uses: github/codeql-action/analyze@v4
         with:
+          checkout_path: fcitx5-wenzhounese
           category: /language:cpp/compiler:gcc
       - name: Stage Linux runtime files
         run: |
