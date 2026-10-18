@@ -20,6 +20,12 @@ cmake --build build
 
 使用 `fcitx5-windows` 提供的 Core/libime SDK 独立构建，脚本位于本仓库的 `scripts/build-windows.ps1`，无需将输入法加入 Core 的构建目标。
 
+#### Nightly 下载
+
+Windows x64 插件可从 [Nightly Build](https://github.com/WAAutoMaton/fcitx5-wenzhounese/releases/tag/latest) 下载，附带 SHA256 校验文件。将 ZIP 中的 `wenzhounese` 目录解压到 Core 安装目录的 `plugins`，或 `%LOCALAPPDATA%/Fcitx5/plugins`，然后重启服务并在 Settings 中添加温州话。
+
+CI 使用 `fcitx5-windows` 的 `master` 构建匹配的 SDK，并验证打包后的插件能够加载和提交候选。包内的 `manifest.json` 记录插件和 Core SDK 的提交号，宿主需使用兼容版本。推送到 `master` 或手动运行 CI 会更新 `Nightly Build`；提交信息包含 `!release` 时跳过发布，PR 仅构建并上传 Actions artifact。
+
 #### 前置条件
 
 - CMake 3.27+、MSYS2 clang64，以及与 Core 相同的 ECM、gettext、Boost iostreams 和 zstd 等构建依赖。
