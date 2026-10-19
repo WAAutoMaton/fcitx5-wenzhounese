@@ -155,38 +155,36 @@ $plugin = (Resolve-Path ./build/windows/package).Path.Replace('\', '/')
 
 ### 韵母表
 
-TODO...
-
-| 音标 | 拼音 |
+| 音标 | 沈氏拼音 |
 | --- | --- |
 | [a] | a |
-| [] | ae |
-| [] | ai |
-|  | ang |
-|  | au |
-|  | e |
-|  | ee |
-|  | ei |
-|  | eng |
-|  | eu |
-|  | i |
-|  | ia |
-|  | iae |
-|  | iai |
-|  | iang |
-|  | iau |
-|  | ieu |
-|  | ii |
-|  | iong | 
-|  | o |
-|  | oe |
-|  | oev |
-|  | ong |
-|   | u |
-|  | uio |
-|  | v |
-|  | uio |
-|  | yo |
+| [ɛ] | ae |
+| [ai] | ai |
+| [aŋ] | ang |
+| [au] | au |
+| [ə] | e |
+| [e] | ee |
+| [ei] | ei |
+| [əŋ] | eng |
+| [əu] | eu |
+| [i] | i |
+| [ia] | ia |
+| [iɛ] | iae |
+| [iai] | iai |
+| [iaŋ] | iang |
+| [iau] | iau |
+| [iəu] | ieu |
+| [ɿ] | ii |
+| [ioŋ] | iong |
+| [o] | o |
+| [ø] | oe |
+| [øy] | oev |
+| [oŋ] | ong |
+| [u] | u |
+| [uɔ] | uio |
+| [y] | ü |
+| [yɔ] | üio |
+| [yo] | üo |
 
 ## 鸣谢
 
